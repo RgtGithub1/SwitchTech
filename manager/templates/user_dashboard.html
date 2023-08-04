@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+{% load static%}
+<html lang="en">
+
+<head>
+  <title>Dashboard</title>
+  <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+  <link href="{% static 'css/user_details.css' %}" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+</head>
+
+<body style="background-color: #fff; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-touch-callout: none;">
+  <div class="container-fluid">
+    <div class="row"><br>
+      <div class="col-md-8">
+        <h1 class="display-6"> {{ user_name }} Employee Dashboard</h1>
+      </div>
+    </div>
+  
+    <div class="container-fluid mt-5 bg-light">
+      <div class="row " style="margin: right 58px;"><br>
+        <div class="col-md-3 p-5 img-thumbnail rounded p-1 mt-3">
+          <div class="chart" style=" height: 300px; left: 60%;">
+            <h2 class="chart-title">Your Progress</h2>
+            <canvas id="doughnutChart"></canvas>
+            <div class="chart-sum" id="chartSum"></div>
+          </div>
+        </div>
+        <!-- <div class="col-md-6 p-5 img-thumbnail rounded p-1 mt-3">
+            <h2 class="chart-title">Selected language details</h2>
+            {% for category in list_categories %}
+            <h2 class="chart-title">{{ category }}</h2>
+            {% endfor %}
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-7 pt-3">
+        <h1 class="quiz-history-title " style="float: left; margin-left: 150px;">{{ user_name }} Quiz history</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8 mx-auto quiz-history-container">
+        {% if history_empty %}
+        <div class="quiz-history-card">
+          <h5 class="card-title">No previous quiz data</h5>
+        </div>
+        {% else %}
+        {% for attempt in attempts_data %}
+        <div class="quiz-history-card">
+          <h5 class="card-title">Quiz Results</h5>
+          <hr>
+          <p class="quiz-history-card-text"><strong>Score:</strong> {{ attempt.user_score }}</p>
+          <p class="quiz-history-card-text"><strong>Attempt Date:</strong> {{ attempt.user_time }}</p>
+          <p class="quiz-history-card-text"><strong>Selected Domain:</strong> {{ attempt.previous_domain }}</p>
+          <p class="quiz-history-card-text"><strong>Go to course here:</strong> <a
+              href="{{ attempt.suggestion_url }}">{{attempt.suggestion_url }}</a></p>
+          <p class="quiz-history-card-text"><strong>Youtube course:</strong> {{ attempt.title }}</p>
+  
+        </div>
+        {% endfor %}
+  
+        {% endif %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-7 pt-3">
+        <h1 class="quiz-history-title " style="float: left; margin-left: 150px;">{{ user_name }} Team Members</h1>
+      </div>
+    </div>
+    <div class="row">    
+      <div class="col-md-8 mx-auto quiz-history-container">
+        {% if no_data %}
+        <div class="quiz-history-card">
+          <h5 class="card-title">Not assigned</h5>
+        </div>
+        {% else %}
+        {% for user in user_list %}
+        <div class="quiz-history-card">
+          {{user.username}} <br>
+          {{user.email}}
+          <form method="POST" style="display: inline;">
+            {% csrf_token %}
+            <input hidden type="text" name="id_user" value='{{notification.user_id}}'>
+            <button onclick="TraceUser('{{ user.id }}')" class="btn btn-primary" style="float: right; margin-right: 104px; margin-top: -21px">Trace</button>
+          </form>
+        </div>
+        {% endfor %}
+  
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Retrieve the canvas element
+    var canvas = document.getElementById('doughnutChart');
+
+    // Create the chart context
+    var ctx = canvas.getContext('2d');
+
+    // Define the labels and data for the chart
+    var labels = {{ list_categories| safe }};
+    var data = {{ list_overall_progress }};
+
+    // Calculate the sum of all data values
+    var sum = data.reduce(function (a, b) {
+      return a + b;
+    }, 0);
+
+    // Append the sum to the labels and data
+    labels.push('Remaining');
+    data.push(100 - sum);
+
+    // Define the colors for the chart segments
+    var colors = ['red', 'blue', 'green', 'orange', 'gray'];
+
+    // Create an array to store the background colors for the chart segments
+    var backgroundColors = [];
+
+    // Assign colors to each segment
+    for (var i = 0; i < labels.length; i++) {
+      if (labels[i] === 'Remaining') {
+        backgroundColors.push('gray');
+      } else {
+        backgroundColors.push(colors[i % colors.length]);
+      }
+    }
+
+    // Create the doughnut chart
+    var doughnutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            data: data,
+            backgroundColor: backgroundColors,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: true,
+        },
+        plugins: {
+          labels: [
+            {
+              render: function (args) {
+                if (args.label === 'Total') {
+                  return {
+                    text: 'Total',
+                    position: 'default',
+                    fontColor: '#000',
+                    fontStyle: 'bold',
+                    fontSize: 14,
+                  };
+                } else {
+                  return args.label + ': ' + args.value;
+                }
+              },
+              position: 'outside',
+              fontColor: '#000',
+              fontStyle: 'bold',
+              fontSize: 14,
+            },
+            {
+              render: 'percentage',
+              fontColor: '#fff',
+              fontStyle: 'bold',
+              fontSize: 12,
+            },
+          ],
+        },
+      },
+    });
+
+    // Display the sum in the center of the chart
+    chartSum.innerHTML = sum.toFixed(2) + '%<br> Completed';
+
+
+    function fetchHistory() {
+      window.location.href = '/history/';
+    }
+
+    function fetchTeamMeber() {
+      window.location.href = '/teammember/';
+    }
+    function fetchNotification() {
+      window.location.href = '/notification/';
+    }
+ 
+    function mylearning() {
+      window.location.href = '/mylearning/';
+    }
+
+    function LogoutUser() {
+      window.location.href = '/logout/';
+    }
+
+
+    function storeLink(link) {
+      // Store the selected link in local session
+      sessionStorage.setItem('selectedLink', link);
+      console.log('Selected Link:', link);
+
+      // Redirect to the other HTML page
+      window.location.href = '/validate/dashboard/index/';
+    }
+    function TraceUser(userid) {
+      // usr id set in sessionStorage and name as selecteduser
+      sessionStorage.setItem('selecteduser', userid);
+      console.log('Selected Link:', userid);
+      const currentHost = window.location.host;
+
+      console.log('currentHost is:', currentHost);
+      const url = `http://${currentHost}/manager/userdashboard/?id=${userid}`;
+      window.open(url, '_blank');
+
+    }
+  </script>
+  <script>
+        document.addEventListener("DOMContentLoaded", function () {
+      var selecteduser = sessionStorage.getItem('selecteduser');
+      if (selecteduser) {
+        console.log('selecteduser Link is:', selecteduser);
+
+        // Set the stored link in the selectedCategory field
+        // document.getElementById('selectedCategory').value = selecteduser;
+      }
+    });
+  </script>
+</body>
+
+</html>

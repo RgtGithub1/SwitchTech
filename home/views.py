@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.http import HttpResponseBadRequest
+from dashboard.employee import url
 
 
 
@@ -23,109 +24,6 @@ def index(request):
         return render(request, 'index.html')
     except Exception as e:
         logging.error(f"{e}")
-
-
-def url(score, category):
-    '''
-    Based on the employee quiz attempt score and difficulty level
-    This will suggest a course from Udemy and youtube course.
-    '''
-    try:
-        YouTube_id = ''
-        Title = ''
-        suggesstion_url = None
-        course_name = None
-        ratings = None
-        instructor = None
-        duration = None
-        difficulty = None
-        YouTube_id = None
-        Title = None
-
-        if score <= 50:
-            logging.info('Based on employee score we'
-                         ' are suggesting Beginner course')
-            suggesstion = CourseSuggession.objects.filter(
-                technology__category_name__icontains=category,
-                difficulty='BG')
-            suggestion_vdo = Video.objects.filter(
-                technology_v__category_name__icontains=category,
-                difficulty='BG')
-            for val in suggesstion:
-                logging.info(f'course url : {val}')
-                suggesstion_url = val
-                course_name = val.course_name
-                ratings = val.ratings
-                instructor = val.course_instructor
-                duration = val.course_duration
-                difficulty = val.difficulty
-                logging.info(f'Suggested udemy course: {course_name}')
-                break
-            for v_id in suggestion_vdo:
-                YouTube_id = v_id.video_id
-                Title = v_id.title
-                logging.info(f'Suggested youtube course: {Title}')
-                logging.info(f'Youtube ID: {YouTube_id}')
-                break
-
-        elif 50 < score <= 70:
-            logging.info('Based on employee score we are'
-                         ' suggesting Intermediate course')
-            suggesstion = CourseSuggession.objects.filter(
-                technology__category_name__icontains=category,
-                difficulty='IN')
-            suggestion_vdo = Video.objects.filter(
-                technology_v__category_name__icontains=category,
-                difficulty='IN')
-            for val in suggesstion:
-                logging.info(f'course url : {val}')
-                suggesstion_url = val
-                course_name = val.course_name
-                ratings = val.ratings
-                instructor = val.course_instructor
-                duration = val.course_duration
-                difficulty = val.difficulty
-                logging.info(f'Suggested udemy course: {course_name}')
-                break
-            for v_id in suggestion_vdo:
-                YouTube_id = v_id.video_id
-                Title = v_id.title
-                logging.info(f'Suggested youtube course: {Title}')
-                logging.info(f'Youtube ID: {YouTube_id}')
-                break
-
-        elif score > 70 <= 100:
-            logging.info('Based on employee score we'
-                         ' are suggesting Advanced course')
-            suggesstion = CourseSuggession.objects.filter(
-                technology__category_name__icontains=category,
-                difficulty='AD')
-            suggesst_vdo = Video.objects.filter(
-                technology_v__category_name__icontains=category,
-                difficulty='AD')
-            for val in suggesstion:
-                logging.info(f'course url : {val}')
-                suggesstion_url = val
-                course_name = val.course_name
-                ratings = val.ratings
-                instructor = val.course_instructor
-                duration = val.course_duration
-                difficulty = val.difficulty
-                logging.info(f'Suggested udemy course: {course_name}')
-                break
-            for v_id in suggesst_vdo:
-                YouTube_id = v_id.video_id
-                Title = v_id.title
-                logging.info(f'Suggested youtube course: {Title}')
-                logging.info(f'Youtube ID: {YouTube_id}')
-                break
-
-
-        return suggesstion_url, course_name, ratings, \
-            instructor, duration, difficulty, YouTube_id, Title
-    except Exception as e:
-        logging.error(f"{e}")
-
 
 
 @login_required(login_url='login')

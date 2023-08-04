@@ -106,7 +106,8 @@ class Otp(models.Model):
     mail = models.CharField(max_length=50)
     otp = models.CharField(max_length=50)
     count = models.IntegerField(default=0)
-    assigned_to = models.CharField(max_length=100, default=None, null=True)
+    assigned_to = models.CharField(max_length=100, default=None, null=True, blank=True)
+    assigned_status = models.CharField(max_length=100, default=None, null=True, blank=True)
 
 
 class QuizAttempt(models.Model):

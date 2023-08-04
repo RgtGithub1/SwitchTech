@@ -46,6 +46,12 @@
               <a class="dropdown-item logout_btn" href="#" onclick="fetchHistory()">
                 <i class="fas fa-sign-out-alt"></i> History
               </a>
+              <a class="dropdown-item logout_btn" href="#" onclick="fetchTeamMeber()">
+                <i class="fas fa-sign-out-alt"></i> My Team
+              </a>
+              <a class="dropdown-item logout_btn" href="#" onclick="fetchNotification()">
+                <i class="fas fa-sign-out-alt"></i> Notification
+              </a>
               <a class="dropdown-item logout_btn" href="#" onclick="feedback()">
                 <i class="fas fa-sign-out-alt"></i>Feedback
               </a>
@@ -200,6 +206,14 @@
  
     function mylearning() {
       window.location.href = '/mylearning/';
+    }
+    function fetchTeamMeber() {
+      window.location.href = "{% url 'manager:teammember' %}"
+    }
+    
+    function fetchNotification() {
+      
+      window.location.href = "{% url 'manager:notification' %}";
     }
 
     function LogoutUser() {
