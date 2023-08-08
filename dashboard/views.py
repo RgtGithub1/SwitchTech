@@ -140,10 +140,12 @@ count = 0
 def send_otp_mail(request):
     try:
         Employee_Mail = request.session.get('mail')
-        username = request.session.get('username')
+        # username = request.session.get('username')
+        username = Employee_Mail.split('@')[0]
         print('resend_otp', username)
         print('mail', Employee_Mail)
-        user_otp = User.objects.get(username=username)
+        # user_otp = User.objects.get(username=username)
+        user_otp = User.objects.get(email=Employee_Mail)
         otp = generate_otp()
         database = Otp()
         update_count = count + 1
@@ -238,7 +240,8 @@ def loginPage(request):
         elif request.method == "POST":
             if request.POST.get('mail'):
                 Employee_Mail = request.POST.get('mail')
-                username = request.POST.get('username')
+                username = Employee_Mail.split('@')[0]
+                # username = request.POST.get('username')
                 # created username and mail session
                 # to store enter username and mail.
                 request.session['username'] = username
@@ -250,10 +253,8 @@ def loginPage(request):
                 last_user_id = int(latest_user.id) if latest_user else 1
                 try:
                     user = User.objects.get(
-                        Q(username__exact=username) | Q(
-                            email__exact=Employee_Mail))
-                    if user.username != username \
-                            or user.email != Employee_Mail:
+                         Q(email__exact=Employee_Mail))
+                    if user.email != Employee_Mail:
                         error_message = 'Invalid username or email.'
                         logging.info('Employee entered'
                                      ' invalid username or email')
