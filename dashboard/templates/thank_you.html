@@ -46,10 +46,37 @@
         a:hover {
             text-decoration: underline;
         }
+        .home-button {
+            margin-top: 21px;
+            background-color: #000000;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #555;
+        }
+
+        .home-button:active {
+            background-color: #777;
+        }
+
+
     </style>
 </head>
 
 <body>
+    <div class="row">
+        <div class="col-md-1 pt-3">
+            <button class="home-button" onclick="redirectToHome()" >Home</button>
+        </div>
     <div class="container">
         <div class="message-box">
             <p>Thanks!</p>
@@ -58,5 +85,11 @@
         <p><a href="{% url 'dashboard:resendfeedback' %}">Submit another response</a></p>
     </div>
 </body>
-
+<script>
+    function redirectToHome() {
+            const currentHost = window.location.host;
+            const url = `http://${currentHost}/validate/dashboard`;
+            window.location.replace(url);
+        }
+</script>
 </html>
