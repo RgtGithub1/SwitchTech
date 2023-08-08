@@ -135,8 +135,6 @@ def generate_otp():
 
 
 count = 0
-
-
 def send_otp_mail(request):
     try:
         Employee_Mail = request.session.get('mail')
@@ -474,12 +472,29 @@ def my_learning(request):
         logging.error(f"{e}")
 
 
+def resendfeedback(request):
+        mail = request.session.get('mail')
+        user = User.objects.get(email=mail)
+        data= Feedback.objects.filter(user=user)
+        return render(request, 'feedback.html')
+
 def feedback(request):
     try:
         logging.info('Feed back page accessed')
-        return render(request, 'feedback.html')
+        mail = request.session.get('mail')
+        user = User.objects.get(email=mail)
+        data= Feedback.objects.filter(user=user)
+        if data.count()>=1:
+            data_count=True
+            return render(request, 'thank_you.html')
+        else:
+            data_count=None
+            return render(request, 'feedback.html',{'data_count':data_count})
     except Exception as e:
         logging.error(f"{e}")
+        print('count is count', data_count)
+        return render(request, 'feedback.html',{'data_count':data_count})
+
 
 
 def submit_feedback(request):
@@ -499,52 +514,38 @@ def submit_feedback(request):
             q8 = request.POST.get('q8')
             q9 = request.POST.get('q9')
             q10 = request.POST.get('q10')
-            q11 = request.POST.get('q11')
-            q12 = request.POST.get('q12')
-            q13 = request.POST.get('q13')
-            q14 = request.POST.get('q14')
-            q15 = request.POST.get('q15')
-
+ 
             user_feedback = Feedback.objects.filter(user=user)
+
 
             if user_feedback:
                 Feedback.objects.filter(user=user).update(
                     overall_exp_with_STS=q1,
                     expectation_in_assisting_tech_transition=q2,
-                    exp_in_navigation_finding_features=q3,
-                    quiz_engaging_and_interactive=q4,
-                    quiz_evaluation_of_tech_accuration=q5,
-                    udm_yt_recom_helpful=q6,
-                    cs_align_withur_curt_knowledge_levl=q7,
-                    conveniency_accessing_recom_yt_cs=q8,
-                    mylearningpage_layout_presentation=q9,
-                    valueof_progs_tracking_feature_on_dashboard=q10,
-                    motivate_to_complete_course=q11,
-                    specific_feature_you_feel_missing=q12,
-                    how_app_enhanced=q13,
-                    technical_prob_performance_issue=q14,
-                    exp_anythingelse_about_STS=q15)
+                    udm_yt_recom_helpful=q3,
+                    cs_align_withur_curt_knowledge_levl=q4,
+                    conveniency_accessing_recom_yt_cs=q5,
+                    valueof_progs_tracking_feature_on_dashboard=q6,
+                    motivate_to_complete_course=q7,
+                    specific_feature_you_feel_missing=q8,
+                    how_app_enhanced=q9,
+                    technical_prob_performance_issue=q10)
+  
             else:
                 add_feedback = Feedback(
                     overall_exp_with_STS=q1,
                     expectation_in_assisting_tech_transition=q2,
-                    exp_in_navigation_finding_features=q3,
-                    quiz_engaging_and_interactive=q4,
-                    quiz_evaluation_of_tech_accuration=q5,
-                    udm_yt_recom_helpful=q6,
-                    cs_align_withur_curt_knowledge_levl=q7,
-                    conveniency_accessing_recom_yt_cs=q8,
-                    mylearningpage_layout_presentation=q9,
-                    valueof_progs_tracking_feature_on_dashboard=q10,
-                    motivate_to_complete_course=q11,
-                    specific_feature_you_feel_missing=q12,
-                    how_app_enhanced=q13,
-                    technical_prob_performance_issue=q14,
-                    exp_anythingelse_about_STS=q15, user=user)
+                    udm_yt_recom_helpful=q3,
+                    cs_align_withur_curt_knowledge_levl=q4,
+                    conveniency_accessing_recom_yt_cs=q5,
+                    valueof_progs_tracking_feature_on_dashboard=q6,
+                    motivate_to_complete_course=q7,
+                    specific_feature_you_feel_missing=q8,
+                    how_app_enhanced=q9,
+                    technical_prob_performance_issue=q10,user=user)
                 add_feedback.save()
         logging.info('Feedback submitted successfully!')
         messages.success(request, 'Feedback submitted successfully!')
-
         return redirect('dashboard:dashboard')
     except Exception as e:
         logging.error(f"{e}")

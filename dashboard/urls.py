@@ -13,6 +13,7 @@ urlpatterns = [
     path('mylearning/', views.my_learning, name='mylearning'),
     path('feedback/', views.feedback, name='feedback'),
     path('submit_feedback/', views.submit_feedback, name='submit_feedback'),
+    path('refeedback/', views.resendfeedback, name='resendfeedback'),
     path('logout/', views.user_logout, name='logout'),
 ]
 
