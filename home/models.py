@@ -12,6 +12,7 @@ class QuizUserScore(models.Model):
     quiz_domain = models.CharField(max_length=50, null=True)
     score = models.IntegerField()
     created_at = models.DateTimeField()
+    is_attempted = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -20,9 +21,6 @@ class QuizUserScore(models.Model):
         super().save(*args, **kwargs)
 
 
-class UserData(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    current_domain = models.CharField(max_length=100)
 
 
 class BaseModel(models.Model):
@@ -133,16 +131,18 @@ class Video(models.Model):
 
 
 class PlayerActivity(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default='')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     current_time = models.FloatField()
-    youtube_id = models.CharField(max_length=25, default='')
+    youtube_id = models.CharField(max_length=25)
     percentage = models.FloatField(default=0.0)
-    category = models.CharField(max_length=50, default='')
+    category = models.CharField(max_length=50)
+    is_completed = models.BooleanField(default=False)  # New field to track completion status
 
     def __str__(self):
         return f"PlayerActivity - youtube_id: {self.youtube_id}, " \
                f"current_time: {self.current_time}, " \
-               f"percentage: {self.percentage}"
+               f"percentage: {self.percentage}, " \
+               f"is_completed: {self.is_completed}"
 
 
 class Feedback(models.Model):

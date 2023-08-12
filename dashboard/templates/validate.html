@@ -79,18 +79,13 @@
 
                         <!-- // it is dispaly a error message -->
 
-                        <div id="error-message" class="error-message" style="color: red;">
-
-                            {% if error_message %}
-
-                            <p>{{ error_message }}</p>
-
-                            {% endif %}
-
-                        </div>
-
-
-
+                        {% if messages %}
+                        <ul class="messages" style="color: red; margin-top: 10px;">
+                            {% for message in messages %}
+                                {{message}}
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
 
                         <!-- //if the user is click on keep signed option next onwards  -->
 

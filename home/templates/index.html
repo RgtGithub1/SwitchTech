@@ -14,6 +14,29 @@
   <title>SwitchTech-Instructions</title>
 
   <link href="{% static 'css/login.css' %}" rel="stylesheet">
+  <style>
+    .home-button {
+      margin-top: 21px;
+      background-color: #000000;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .home-button:hover {
+        background-color: #555;
+    }
+
+    .home-button:active {
+        background-color: #777;
+    }
+  </style>
   <script>
     //this function use the dropdown of domain
     function enableButtons() {
@@ -42,31 +65,38 @@
     });
 
   </script>
+  <script type="text/javascript">
+    function preback() {
+      window.history.forward();
+    }
+    setTimeout("preback()", 0);
+    window.onunload=function() {null};
+  </script>
 </head>
 
 <body>
-
   <!-- {% include 'navbar.html' %} -->
   <div class="container">
     <div class="row mb-1">
       <div class="col-md-8">
         <h1 class="header_title pt-3">SwitchTech <span class="header_title1">SYSTEM</span></h1>
-
       </div>
       <div class="col-md-4">
         <img class="logo-main" src="{% static 'images/ratnaglobal_logo.png' %}" />
       </div>
     </div>
-
+    <div class="row">
+      <div class="col-md-2">
+        <button class="home-button" onclick="redirectToHome()">Home</button>
+      </div>
+    </div>
     <div class="row mt-1 mb-1">
       <div class="col-md-6">
         <form action="" onsubmit="startQuiz(); return false;">
           <div>
             <div class="form-group">
               <!-- //here select a domain -->
-              <p>
-              <h5>Selected Domain</h5>
-              </p>
+              <p><h5>Selected Domain</h5></p>
               <input type="text" class="form-control" id="selectedCategory" onchange="enableButtons()" readonly>
             </div>
             <!-- //These are the user Instructions -->
@@ -126,18 +156,31 @@
 
       //This function is used to skip the quiz by the user.
       function skipQuiz() {
-        const selectedTechnology = document.getElementById("selectedCategory").value;
-        const currentHost = window.location.host;
-        const url = `http://${currentHost}/home/skipquiz/?category=${selectedTechnology}`;
-        window.location.replace(url);
+        var quizCount = {{ user_quiz_attempt_count }};
+        if (quizCount >= 3) {
+          // Redirect to the page for raising a ticket
+          window.open("https://letmecall.keka.com/#/me/helpdesk/mytickets");
+        } else {
+          const selectedTechnology = document.getElementById("selectedCategory").value;
+          const currentHost = window.location.host;
+          const url = `http://${currentHost}/home/skipquiz/?category=${selectedTechnology}`;
+          window.location.replace(url);
+        }
       }
 
       //This function is used to start the quiz.
       function startQuiz() {
-        const selectedTechnology = document.getElementById("selectedCategory").value;
-        const currentHost = window.location.host;
-        const url = `http://${currentHost}/home/quiz/?category=${selectedTechnology}`;
-        window.location.replace(url);
+        var quizCount = {{ user_quiz_attempt_count }};
+        if (quizCount >= 3) {
+          // Redirect to the page for raising a ticket
+          window.open("https://letmecall.keka.com/#/me/helpdesk/mytickets");
+        } else {
+          // Otherwise, proceed to the quiz page
+          const selectedTechnology = document.getElementById("selectedCategory").value;
+          const currentHost = window.location.host;
+          const url = `http://${currentHost}/home/quiz/?category=${selectedTechnology}`;
+          window.location.replace(url);
+        }
       }
 
       document.addEventListener("DOMContentLoaded", function () {
@@ -153,6 +196,14 @@
         const selectedCategory = this.value;
         sessionStorage.setItem('selectedLink', selectedCategory);
       });
+
+      
+        function redirectToHome() {
+          const currentHost = window.location.host;
+          const url = `http://${currentHost}/validate/dashboard`;
+          window.location.replace(url);
+        }
+      
 
     </script>
 

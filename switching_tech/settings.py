@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'preventconcurrentlogins',
     'dashboard',
+    'reassessment',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -78,23 +78,17 @@
 
                             <label for="mail">Email:</label>
 
-                            <input type="text" name="mail" required id="mail" pattern="[a-zA-Z].*@ratnaglobaltech\.com"
-                                placeholder="Enter your RGT Email only" onkeydown="handleEnterKey(event)"
-                                oninput="validateEmail()"><br>
+                            <input type="text" name="mail" required id="mail" pattern="[a-zA-Z]+\.[a-zA-Z]+@ratnaglobaltech\.com"
+                                placeholder="Enter your RGT Email only" onkeydown="handleEnterKey(event)">
 
                         </div>
 
-                        {% if error_message %}
-
-
-                        <!-- //its a dispaly error messages -->
-
-                        <div class="error-message">
-
-                            {{ error_message }}
-
-                        </div>
-
+                        {% if messages %}
+                        <ul class="messages" style="color: red; margin-top: 10px;">
+                            {% for message in messages %}
+                                {{message}}
+                            {% endfor %}
+                        </ul>
                         {% endif %}
 
                         <!-- It serves as a container for the "Send OTP" button. -->

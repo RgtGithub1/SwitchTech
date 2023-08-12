@@ -66,24 +66,34 @@
   <div class="container-fluid mt-2">
     <div class="col-md-8 mx-auto quiz-history-container">
       {% if no_data %}
-      <div class="quiz-history-card">
-        <h5 class="card-title">No previous quiz data</h5>
-      </div>
+        <div class="quiz-history-card">
+          <h5 class="card-title">No previous quiz data</h5>
+        </div>
       {% else %}
-      {% for attempt in attempts_data %}
-      <div class="quiz-history-card">
-        <h5 class="card-title">Quiz Results</h5>
-        <hr>
-        <p class="quiz-history-card-text"><strong>Score:</strong> {{ attempt.user_score }}</p>
-        <p class="quiz-history-card-text"><strong>Attempt Date:</strong> {{ attempt.user_time }}</p>
-        <p class="quiz-history-card-text"><strong>Selected Domain:</strong> {{ attempt.previous_domain }}</p>
-        <p class="quiz-history-card-text"><strong>Go to course here:</strong> <a
-            href="{{ attempt.suggestion_url }}">{{attempt.suggestion_url }}</a></p>
-        <p class="quiz-history-card-text"><strong>Youtube course:</strong> {{ attempt.title }}</p>
-
-      </div>
-      {% endfor %}
-
+        {% for attempt in attempts_data %}
+          {% if attempt.attempt %}
+            <div class="quiz-history-card">
+              <h5 class="card-title">Attempted Quiz</h5>
+              <hr>
+              <p class="quiz-history-card-text"><strong>Score:</strong> {{ attempt.user_score }}</p>
+              <p class="quiz-history-card-text"><strong>Attempt Date:</strong> {{ attempt.user_time }}</p>
+              <p class="quiz-history-card-text"><strong>Selected Domain:</strong> {{ attempt.previous_domain }}</p>
+              <p class="quiz-history-card-text">
+                <strong>Go to course here:</strong> 
+                <a href="{{ attempt.suggestion_url }}" target="_blank">{{ attempt.suggestion_url }}</a>
+              </p>
+              <p class="quiz-history-card-text"><strong>YouTube course:</strong> {{ attempt.title }}</p>
+            </div>
+          {% else %}
+            <div class="quiz-history-card">
+              <h5 class="card-title">Skipped Quiz</h5>
+              <hr>
+              <p class="quiz-history-card-text"><strong>Date:</strong> {{ attempt.user_time }}</p>
+              <p class="quiz-history-card-text"><strong>Selected Domain:</strong> {{ attempt.previous_domain }}</p>
+              <p class="quiz-history-card-text"><strong>YouTube course:</strong> {{ attempt.title }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
       {% endif %}
     </div>
   </div>

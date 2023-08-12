@@ -1,21 +1,52 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html>
+
 <head>
 
-    <title>SwitchTech-MyLearning</title>
+    <title>My Learning Page</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+
     integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
     <link href="{% static 'css/login.css' %}" rel="stylesheet">
+
     <link href="{% static 'css/mylearning.css' %}" rel="stylesheet">
+
     <style>
+
         .video-details p[id^="percentage"] {
+
             display: none;
+
         }
 
+
+
         #overall-percentage {
+
             text-align: center;
+
+        }
+
+
+
+        .quiz-button {
+            margin-top: 30px;
+            display: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+
+        }
+        .quiz-button:hover {
+            background-color: #0056b3;
         }
 
         .no-videos-message {
@@ -30,19 +61,31 @@
             max-width: 400px;
         }
 
-
     </style>
+
 </head>
+
 <body>
+
     <div class="container">
+
         <header class="row mb-4">
+
             <div class="col-md-8">
+
                 <h1 class="header_title pt-3">SwitchTech <span class="header_title1">SYSTEM</span></h1>
+
             </div>
+
             <div class="col-md-4">
+
                 <img class="logo-main" src="{% static 'images/ratnaglobal_logo.png' %}" />
+
             </div>
+
         </header>
+
+
 
         <div class="row">
             <div class="col-md-1 pt-3">
@@ -52,186 +95,535 @@
               <h1 class="quiz-history-title " style="float: left; margin-left: 100px;">My Learning </h1>
             </div>
           </div>
+
         {% if videos %}
-       
-        
+
+
+
+
+
         <div class="videos-container">
+
             {% for video in videos %}
-                <div class="video-container">
+                {% if not video.status %}
+
+                <div class="video-container" id="videoContainer{{ forloop.counter }}">
                     <h2>{{ video.title }}</h2>
                     <div class="video-player" id="player{{ forloop.counter }}"></div>
                     <div class="video-details">
                         <p id="duration{{ forloop.counter }}">Hours</p>
+                        <p id="category{{ forloop.counter }}">{{video.category}}</p>
                         <p id="percentage{{ forloop.counter }}"></p>
                     </div>
                     <hr>
                     <button class="resume-button" onclick="resumeVideo('{{ video.youtube_id }}', '{{ video.resume_time }}')">Resume</button>
                     <button class="restart-button" onclick="restartVideo('{{ video.youtube_id }}')">Restart</button>
+                    <div id="quizContent{{ forloop.counter }}" style="display: none;">
+                        <button id="quizButton{{ forloop.counter }}" class="quiz-button" onclick="showQuizPopup('{{ video.category }}', '{{ video.youtube_id }}')">Quiz</button>
+                        <br><div id="quizText{{ forloop.counter }}">Congratulations! You've completed the video. Take the quiz to test your knowledge.</div></br>
+                    </div>
+                    
                 </div>
+                {% else %}
+                    <p id="category{{ forloop.counter }}">{{video.category}}</p>
+                    <button class="quiz1-button" onclick="showQuizPopup('{{ video.category }}', '{{ video.youtube_id }}')">Quiz</button>
+                {% endif %}  
+            
             {% endfor %}
+
         </div>
+
+        <div id="quiz-section" style="display: none;">
+
+            <h2>Quiz Questions</h2>
+
+            <form id="quiz-form">
+
+                {% csrf_token %}
+
+                <!-- Quiz questions will be inserted here -->
+
+            </form>
+
+        </div>
+
+
+
         <p id="total-duration"></p>
-        <p id="overall-percentage" class="center-text"></p>
+
+        <!-- <p id="overall-percentage" class="center-text"></p> -->
+
         <p class="note">Please watch this video on our website only, so that you can resume watch anytime.</p>
+
     {% else %}
-        <p class="no-videos-message">No videos found.</p>
+
+        <p class="no-videos-message">No Videos Found.</p>
+
     {% endif %}
+
     </div>
 
-   
+    <!-- <div id="quiz-section" style="display: none;">
+
+        <h2>Quiz Questions</h2>
+
+        <form id="quiz-form"> -->
+
+            <!-- {% csrf_token %}
+
+            {% for question in questions %}
+
+                <fieldset>
+
+                    <legend>{{ question.question }}</legend>
+
+                    {% for option in question.options %}
+
+                        <label>
+
+                            <input type="radio" name="question{{ question.id }}" value="{{ option.0 }}">
+
+                            {{ option }}
+
+                        </label><br>
+
+                    {% endfor %} -->
+
+                <!-- </fieldset> -->
+
+            <!-- {% endfor %} -->
+
+            <!-- <button type="submit">Submit</button>
+
+        </form>
+
+    </div> -->
+
+
+
+    <script>
+
+        function toggleQuiz() {
+
+            const quizSection = document.getElementById('quiz-section');
+
+            quizSection.style.display = (quizSection.style.display === 'none') ? 'block' : 'none';
+
+        }
+
+    </script>
+
+
+
 
 
     <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
+
         var players = [];
+
         var totalDuration = 0;
+
         var overallPercentage = 0;
 
+
+
         function onYouTubeIframeAPIReady() {
+
+ 
+
             {% for video in videos %}
-                var player{{ forloop.counter }} = new YT.Player('player{{ forloop.counter }}', {
-                    height: '100%',
-                    width: '100%',
-                    videoId: '{{ video.youtube_id }}',
-                    playerVars: {
-                    'startSeconds': '{{ video.resume_time }}',
-                    'modestbranding': 1
-                },
-                    events: {
-                        'onReady': onPlayerReady{{ forloop.counter }}
-                    }
-                });
-                players.push(player{{ forloop.counter }});
-            {% endfor %}
-            console.log('YouTube Iframe API is ready');
-        }
 
-        {% for video in videos %}
-            function onPlayerReady{{ forloop.counter }}(event) {
-                var player = event.target;
-                var youtubeId = player.getVideoData().video_id;
-                var duration = player.getDuration();
-                var durationElement = document.getElementById('duration{{ forloop.counter }}');
-                durationElement.textContent = 'Duration: ' + formatTime(duration);
-                totalDuration += duration;
-                updateTotalDuration();
+            var player{{ forloop.counter }} = new YT.Player('player{{ forloop.counter }}', {
 
-                setInterval(function() {
-                    var currentTime = player.getCurrentTime();
-                    var percentage = (currentTime / duration) * 100;
-                    var percentageElement = document.getElementById('percentage{{ forloop.counter }}');
-                    percentageElement.textContent = 'Percentage: ' + percentage.toFixed(2) + '%';
-                    calculateOverallPercentage();
-                }, 1000); // Update every second
+            height: '100%',
+
+            width: '100%',
+
+            videoId: '{{ video.youtube_id }}',
+
+            playerVars: {
+
+                // 'startSeconds': '{{ video.resume_time }}',
+
+                'start': Math.floor({{ video.resume_time }}),
+
+                'modestbranding': 1
+
+            },
+
+            events: {
+
+                'onReady': onPlayerReady{{ forloop.counter }},
+
+                'onStateChange': onPlayerStateChange{{ forloop.counter }}
+
             }
-        {% endfor %}
+
+            });
+
+            players.push(player{{ forloop.counter }});
+
+            {% endfor %}
+
+            console.log('YouTube Iframe API is ready');
+     }
+
+{% for video in videos %}
+
+
+
+
+
+    //     function onPlayerStateChange(event) {
+    //     if (event.data == YT.PlayerState.ENDED) {
+    //         const videoId = event.target.getVideoData().video_id;
+    //         updateCompletionStatusInDatabase(videoId);
+    //     }
+    // }
+    function onPlayerStateChange{{ forloop.counter }}(event) {
+    if (event.data == YT.PlayerState.ENDED) {
+        const videoId = event.target.getVideoData().video_id;
+        updateCompletionStatusInDatabase(videoId);
+
+        // Pause the video
+        event.target.pauseVideo();
+
+        // Hide video player, resume and restart buttons
+        var videoPlayer = document.getElementById('player{{ forloop.counter }}');
+        var resumeButton = document.querySelector('#videoContainer{{ forloop.counter }} .resume-button');
+        var restartButton = document.querySelector('#videoContainer{{ forloop.counter }} .restart-button');
+        var Durationele = document.getElementById("duration{{ forloop.counter }}");
+        var cat = document.getElementById( "category{{ forloop.counter }}");
+
+       
+        videoPlayer.style.display = 'none';
+        resumeButton.style.display = 'none';
+        restartButton.style.display = 'none';
+        Durationele.style.display = 'none';
+        cat.style.display = 'none';
+
+
+
+        // Show quiz button and text
+        var quizContent = document.getElementById('quizContent{{ forloop.counter }}');
+        console.log("Quiz Content:", quizContent); // Debug statement
+        quizContent.style.display = 'block';
+         // Show quiz button
+        var quizButton = document.getElementById('quizButton{{ forloop.counter }}');
+        quizButton.style.display = 'block';
+    }
+}
+
+
+
+    // Define the getCookie function
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+    function updateCompletionStatusInDatabase(videoId) {
+        fetch('/update-completion-status/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken') // Make sure getCookie is defined
+            },
+            body: new URLSearchParams({
+                'video_id': videoId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+
+    function onPlayerReady{{ forloop.counter }}(event) {
+        var player = event.target;
+        var youtubeId = player.getVideoData().video_id;
+        var duration = player.getDuration();
+        var durationElement = document.getElementById('duration{{ forloop.counter }}');
+        durationElement.textContent = 'Duration: ' + formatTime(duration);
+        totalDuration += duration;
+        updateTotalDuration();
+        onPlayerStateChange({ data: event.target.getPlayerState() });
+
+        setInterval(function() {
+            var currentTime = player.getCurrentTime();
+            var percentage = (currentTime / duration) * 100;
+            var percentageElement = document.getElementById('percentage{{ forloop.counter }}');
+            percentageElement.textContent = 'Percentage: ' + percentage.toFixed(2) + '%';
+            // calculateOverallPercentage();
+        }, 1000); // Update every second
+    }
+    
+        {% endfor %}    
+
+        
+
+
 
         function formatTime(time) {
+
             var hours = Math.floor(time / 3600);
+
             var minutes = Math.floor((time % 3600) / 60);
+
             var seconds = Math.floor(time % 60);
+
             return hours + ':' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
             }
+
+
+
 
 
         function updateTotalDuration() {
+
             var totalDurationElement = document.getElementById('total-duration');
+
             totalDurationElement.textContent = 'Total Duration: ' + formatTime(totalDuration);
+
         }
+
+
 
         function calculateOverallPercentage() {
+
             var overallPercentageSum = 0;
-    
+
+
+
             players.forEach(function(player) {
+
                 var currentTime = player.getCurrentTime();
+
                 var duration = player.getDuration();
+
                 var percentage = (currentTime / duration) * 100;
+
                 overallPercentageSum += percentage;
+
             });
-    
+
+
+
             overallPercentage = overallPercentageSum / players.length;
+
             var overallPercentageElement = document.getElementById('overall-percentage');
+
             overallPercentageElement.textContent = 'Overall Percentage: ' + overallPercentage.toFixed(2) + '%';
+
         }
+
+
 
         window.addEventListener('beforeunload', function(event) {
+
             console.log('beforeunload event triggered');
+
             saveCurrentTimes();
+
         });
 
+
+
         function saveCurrentTimes() {
+
             console.log('Saving current times');
+
             players.forEach(function(player) {
+
                 var youtubeId = player.getVideoData().video_id;
+
                 var currentTime = player.getCurrentTime();
+
                 var duration = player.getDuration();
+
                 var percentage = (currentTime / totalDuration) * 100;
+
                 console.log('Video:', youtubeId, 'Current Time:', currentTime);
+
                 saveCurrentTime(youtubeId, currentTime, percentage);
+
             });
+
         }
+
+
+
 
 
         function saveCurrentTime(youtubeId, currentTime, percentage) {
+
             console.log('Saving current time for video:', youtubeId);
+
             if (currentTime > 0) {
+
                 var url = '/home/save_time';
+
                 var data = {
+
                     'youtube_id': youtubeId,
+
                     'current_time': currentTime,
+
                     'percentage': percentage
+
                 };
+
                 fetch(url, {
+
                     method: 'POST',
+
                     headers: {
+
                         'Content-Type': 'application/json'
+
                     },
+
                     body: JSON.stringify(data)
+
                 })
+
                 .then(response => {
+
                     if (response.ok) {
+
                         console.log('Current time saved successfully for video:', youtubeId);
+
                     } else {
+
                         console.error('Failed to save current time for video:', youtubeId);
+
                     }
+
                 })
+
                 .catch(error => {
+
                     console.error('An error occurred while saving current time for video:', youtubeId, error);
+
                 });
+
             }
-            
+
+
+
         }
+
+
 
         function resumeVideo(youtubeId, resumeTime) {
+
             console.log('Resuming video:', youtubeId, 'at time:', resumeTime);
+
             var player = players.find(function(p) {
+
                 return p.getVideoData().video_id === youtubeId;
+
             });
 
+
+
             if (player) {
+
                 player.seekTo(resumeTime);
+
                 player.playVideo();
+
             }
+
         }
+
+
 
         function restartVideo(youtubeId) {
+
             console.log('Restarting video:', youtubeId);
+
             var player = players.find(function(p) {
+
                 return p.getVideoData().video_id === youtubeId;
+
             });
 
+
+
             if (player) {
+
                 player.seekTo(0);
+
                 player.playVideo();
+
             }
+
         }
-        
+
+
+
         function redirectToHome() {
+
             const currentHost = window.location.host;
+
             const url = `http://${currentHost}/validate/dashboard`;
+
             window.location.replace(url);
+
         }
-        
+
+
+
+        function showQuizPopup(category,video_id2) {
+
+            if (confirm("You have completed the video. Would you like to take the quiz?")) {
+
+                toggleQuiz(); // Show the quiz section
+
+                const currentHost = window.location.host;
+
+
+
+                const quizUrl = `http://${currentHost}/reassessment/trainingquiz/?category=${category}&video_id_data=${video_id2}`;
+<!--                const quizUrl = `http://${currentHost}/reassessment/trainingquiz/?category=${category}`;-->
+
+                window.location.replace(quizUrl);
+
+            }
+
+        }
+
+
+
+
+
+
+
     </script>
+
+
+
+
+
 </body>
+
 </html>

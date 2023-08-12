@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Quiz Page</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #f8f8f8;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        .question textarea {
+            width: 100%;
+        }
+
+        .submit-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .submit-button input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-button input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Animation styles */
+        .question {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+            animation-delay: 0.2s;
+        }
+
+        .submit-button {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Quiz</h1>
+    <form action="{% url 'reassessment:reassessmentquiz' %}" method="post" id="feedbackForm">
+        {% csrf_token %}
+        {% for question in questions %}
+            <div class="question">
+                <p> <b>{{ forloop.counter }} . {{ question.question }}</p></b>
+                {% if question.code_snippet %}
+                <pre><code class="language-{{ question.Technology }}">{{ question.code_snippet|safe }}</code></pre>
+                {% endif %}
+                <label for="q{{ question.id }}_1"><input type="radio" name="q{{ question.id }}" value="1" id="q{{ question.id }}_1"> {{ question.option_a }}</label>
+                <label for="q{{ question.id }}_2"><input type="radio" name="q{{ question.id }}" value="2" id="q{{ question.id }}_2"> {{ question.option_b }}</label>
+                <label for="q{{ question.id }}_3"><input type="radio" name="q{{ question.id }}" value="3" id="q{{ question.id }}_3"> {{ question.option_c }}</label>
+                <label for="q{{ question.id }}_4"><input type="radio" name="q{{ question.id }}" value="4" id="q{{ question.id }}_4"> {{ question.option_d }}</label>
+            </div>
+        {% endfor %}
+
+        
+        <div class="submit-button">
+            <input type="submit" value="Submit" onclick="validateForm(event)">
+        </div>
+    </form>
+
+    
+    <link href="{% static 'prism.css' %}" rel="stylesheet">
+    <script src="{% static 'prism.js' %}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/themes/prism.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-python.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Prism.highlightAll();
+        });
+
+        function validateForm(event) {
+            event.preventDefault(); // Prevent the form from submitting by default
+
+            const questions = document.querySelectorAll('.question');
+            const selectedOptions = {};
+
+            questions.forEach((question) => {
+                const questionId = question.querySelector('input[type="radio"]:checked').getAttribute('name');
+                const selectedOption = question.querySelector('input[type="radio"]:checked').value;
+                selectedOptions[questionId] = selectedOption;
+            });
+
+            // Check if any question is not answered
+            let isAnyQuestionNotAnswered = false;
+            for (const questionId in selectedOptions) {
+                if (!selectedOptions[questionId]) {
+                    isAnyQuestionNotAnswered = true;
+                    break;
+                }
+            }
+
+            // If any question is not answered, display an error message
+            if (isAnyQuestionNotAnswered) {
+                alert("Please answer all questions before submitting.");
+                return;
+            }
+
+            // If all questions are answered, submit the form
+            document.getElementById('feedbackForm').submit();
+            alert("Result submitted successfully.");
+        }
+
+    </script>
+</body>
+</html>

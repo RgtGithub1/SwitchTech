@@ -2,6 +2,7 @@
 
 {% load static%}
 
+
 <html>
 <head>
     <meta charset="UTF-8">
@@ -9,38 +10,94 @@
 
     <title>SwitchTech-Recommendation Page</title>
 
-	<link href="{% static 'css/skipquiz.css' %}" rel="stylesheet">
+    <link href="{% static 'css/skipquiz.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+    <style>
+        .youtube-videos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .youtube-video {
+            flex: 0 0 calc(50% - 20px); /* Adjust width as needed */
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            overflow: hidden;
+        }
+        
+        .youtube-video iframe {
+            width: 100%;
+            height: 200px; /* Adjust height as needed */
+        }
+        
+        .video-info {
+            margin-top: 10px;
+        }
+        
+        .video-info p {
+            margin: 5px 0;
+        }
+
+        .select-course-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+    </style>
+    <script type="text/javascript">
+        function preback() {
+          window.history.forward();
+        }
+        setTimeout("preback()", 0);
+        window.onunload=function() {null};
+    </script>
 
 </head>
 <body>
     <div class="container">
+
+        <div id="dynamicPopup" class="modal" style="display: none;">
+            <div class="modal-content" style="width: 366px;">
+                <span class="modal-close" onclick="closeDynamicPopup()">&times;</span>
+                <div id="dynamicPopupContent"></div>
+            </div>
+        </div>
+
         <div class="row ">
             <div class="col-md-7 header_title">
-
                 <h1 class="header_title pt-3">SwitchTech <span class="header_title1 ">SYSTEM</span></h1>
-
             </div>
+
             <div class="col-md-5 pt-3">
                 <img class="logo-main" src="{% static 'images/ratnaglobal_logo.png' %}" />
             </div>
         </div>
-        <div class="row  ">
 
+        <div class="row  ">
             <div class="col-md-1  pt-4">
                 <button class="home-button" onclick="redirectToHome()">Home</button>
             </div>
+
             <div class="col-md-5  pt-3">
                 <h2 class="display-6">Recommendations</h2>
             </div>
+
             <div class="col-md-5 pt-6 ">
                 <div class="logout-home-container">
                     <button class="logout-button" onclick="openModal()">Logout</button>
-
                 </div>
 
                 <div id="myModal" class="modal">
@@ -79,6 +136,7 @@
                         <h6>Happy learning!!!!!</h6> 
                             <hr>
                         </h6>
+                        <h2>Udemy Recommendations</h2>
                         {% for suggestion in suggestions %}
                         <div class="course">
                             <u>
@@ -109,6 +167,33 @@
                             <hr><br>
                         </div>
                         {% endfor %}
+
+                        <h2>YouTube Recommendations</h2>
+                        <div class="youtube-videos">
+                            {% for video_id, video_title, video_difficulty in video_data %}
+                            <div class="youtube-video">
+                                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
+                                <div class="video-info">
+                                    <p>Title: {{ video_title }}</p>
+                                    <p>Difficulty:
+                                        {% if video_difficulty == "BG" %}
+                                            Beginner
+                                        {% elif video_difficulty == "IN" %}
+                                            Intermediate
+                                        {% elif video_difficulty == "AD" %}
+                                            Advanced
+                                        {% else %}
+                                            {{ video_difficulty }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <button class="select-course-button" onclick="showDynamicPopup(this)"
+                                    data-course-title="{{ video_title }}" data-youtube-id="{{ video_id }}" data-selected-category="{{ selected_category }}">Select this course
+                                </button>
+
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                     <div id="popupModal" class="modal">
                         <div class="modal-content" style="width: 366PX;">
@@ -185,6 +270,87 @@
             const url = 'http://' + currentHost + '/validate/dashboard';
             window.location.replace(url);
         }
+
+        function showDynamicPopup(clickedButton) {
+            const youtubeId = clickedButton.getAttribute('data-youtube-id');
+            const selectedCategory = clickedButton.getAttribute('data-selected-category');
+            const courseTitle = clickedButton.getAttribute('data-course-title');
+
+            console.log('a',selectedCategory)
+            console.log('b',youtubeId)
+            
+            const dynamicPopupContent = `
+                <p>Do you want to select the course "${courseTitle}"?</p>
+                <button onclick="saveCourseSelection('${youtubeId}', '${selectedCategory}')">Yes</button>
+                <button onclick="closeDynamicPopup()">No</button>
+            `;
+            
+            openDynamicPopup(dynamicPopupContent);
+        }
+        
+        function openDynamicPopup(content) {
+            const dynamicPopup = document.getElementById('dynamicPopup');
+            const dynamicPopupContent = document.getElementById('dynamicPopupContent');
+            
+            dynamicPopupContent.innerHTML = content;
+            dynamicPopup.style.display = 'block';
+        }
+        
+        function closeDynamicPopup() {
+            const dynamicPopup = document.getElementById('dynamicPopup');
+            dynamicPopup.style.display = 'none';
+        }
+        
+        function saveCourseSelection(youtubeId, selectedCategory) {
+            const data = {
+                current_time: 0, // Set the initial time as needed
+                youtube_id: youtubeId,
+                percentage: 0, // Set the initial percentage as needed
+                selectedcategory: selectedCategory,
+                quiz_not: 0
+
+            };
+
+            console.log('data',data)
+
+            fetch('/home/save_time', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                closeDynamicPopup(); // Close the dynamic pop-up after saving
+                
+                const dashboardMylearningUrl = '/mylearning/';
+                window.location.href = dashboardMylearningUrl;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Check if this cookie contains the name we want
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
     </script>
 </body>
 </html>

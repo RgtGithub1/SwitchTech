@@ -11,6 +11,7 @@ urlpatterns = [
     path('validate/dashboard/', views.dashboard, name='dashboard'),
     path('history/', views.history, name='history'),
     path('mylearning/', views.my_learning, name='mylearning'),
+    path('update-completion-status/', views.update_completion_status, name='update_completion_status'),
     path('feedback/', views.feedback, name='feedback'),
     path('submit_feedback/', views.submit_feedback, name='submit_feedback'),
     path('refeedback/', views.resendfeedback, name='resendfeedback'),

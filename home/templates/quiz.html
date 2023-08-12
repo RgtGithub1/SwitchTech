@@ -107,6 +107,12 @@
             
             <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
             <script>
+
+              window.addEventListener("beforeunload", function(event) {
+                  // Submit the quiz when the user is leaving the page
+                  submitQuiz1(event, false);
+              })
+              
               var countdown = localStorage.getItem('countdown') || {{ new_timer }}; // Retrieve countdown value from localStorage or set to default
               var timerDisplay = document.getElementById('timer');
 
@@ -134,6 +140,10 @@
               updateTimer();
 
               function submitQuiz1(event, showErrorModal = true) {
+                if (event) {
+                    event.preventDefault(); // Prevent the browser's default behavior
+                }
+
                 event && event.preventDefault();
                 const currentQuestionUid = app.questions[app.currentQuestion].uid;
 
@@ -156,6 +166,9 @@
                 }).catch(error => {
                   console.error('Error submitting score:', error);
                 });
+
+                // Set the flag indicating that the quiz has been submitted
+                sessionStorage.setItem('quizSubmitted', 'true');
                 
                 localStorage.removeItem('countdown');
                 localStorage.removeItem('currentQuestion');

@@ -101,3 +101,66 @@ h1 {
 .home-button:active {
   background-color: #777;
 }
+ /* styles.css */
+ .quiz-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.quiz-button:hover {
+  background-color: #0056b3;
+}
+.video-container.watched {
+  opacity: 0.5; /* Apply a different style for watched videos */
+  pointer-events: none; /* Disable interactions with watched videos */
+}
+.quiz1-button {
+  margin-top: 30px;
+  padding: 4px 16px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  height: 30px; /* Adjust the height value for button height */
+  line-height: 24px; /* Adjust the line-height value for vertical alignment */
+}
+
+.quiz1-button:hover {
+  background-color: #0056b3;
+}
+/* Add your other styles above */
+
+.quiz-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.quiz-category {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.quiz-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quiz-button:hover {
+  background-color: #0056b3;
+}/* Add your other styles above */
+

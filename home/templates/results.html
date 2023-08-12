@@ -118,7 +118,7 @@
             </div>
 
         <div class="col-md-4 p-3 youtube">
-            <h2>Recommendations</h2>
+            <h2>YouTube Recommendations</h2>
             <div id="ytplayer" class="rounded p-1 mt-3" style="width: 100%; height: 310px;"></div>
         </div>
 
@@ -253,7 +253,56 @@
             const url = `http://${currentHost}/validate/dashboard`;
             window.location.replace(url);
         }
+        function onYouTubePlayerAPIReady() {
+    player = new YT.Player('ytplayer', {
+        videoId: youtubeId,
+        playerVars: {
+            'start': 0,
+        },
+        events: {
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
 
+// Save the current time when the video is paused or ended
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+        savePlayerProgress(player.getCurrentTime());
+    }
+}
+
+// Save the current time to local storage and a cookie
+function savePlayerProgress(currentTime) {
+    localStorage.setItem('youtubePlayerProgress_' + youtubeId, JSON.stringify({ currentTime: currentTime }));
+    document.cookie = 'youtubePlayerProgress_' + youtubeId + '=' + currentTime;
+}
+
+// Load and play the video with saved progress
+function loadVideoWithProgress() {
+    var savedProgress = JSON.parse(localStorage.getItem('youtubePlayerProgress_' + youtubeId));
+    if (savedProgress) {
+        player.seekTo(savedProgress.currentTime);
+        player.playVideo();
+    }
+}
+
+// Load saved video progress when the page loads
+window.onload = function () {
+    loadVideoWithProgress();
+};
+
+// Check if the user is new or returning
+function isNewUser() {
+    return document.cookie.indexOf('youtubePlayerProgress_' + youtubeId) === -1;
+}
+
+// On window unload, save progress if it's a returning user
+window.addEventListener('beforeunload', function () {
+    if (!isNewUser()) {
+        savePlayerProgress(player.getCurrentTime());
+    }
+});
     </script>
 </body>
 </html>

@@ -14,170 +14,10 @@ from django.utils import timezone
 import pytz
 from django.http import JsonResponse
 from django.contrib import messages
-
-
-def url(score, category):
-    '''
-    Based on the employee quiz attempt score and difficulty level
-    This will suggest a course from Udemy and youtube course.
-    '''
-    try:
-        YouTube_id = ''
-        Title = ''
-        suggesstion_url = None
-        course_name = None
-        ratings = None
-        instructor = None
-        duration = None
-        difficulty = None
-        YouTube_id = None
-        Title = None
-
-        if score <= 50:
-            logging.info('Based on employee score we'
-                         ' are suggesting Beginner course')
-            suggesstion = CourseSuggession.objects.filter(
-                technology__category_name__icontains=category,
-                difficulty='BG')
-            suggestion_vdo = Video.objects.filter(
-                technology_v__category_name__icontains=category,
-                difficulty='BG')
-            for val in suggesstion:
-                logging.info(f'course url : {val}')
-                suggesstion_url = val
-                course_name = val.course_name
-                ratings = val.ratings
-                instructor = val.course_instructor
-                duration = val.course_duration
-                difficulty = val.difficulty
-                break
-            for v_id in suggestion_vdo:
-                YouTube_id = v_id.video_id
-                Title = v_id.title
-                break
-
-        elif 50 < score <= 70:
-            logging.info('Based on employee score we are'
-                         ' suggesting Intermediate course')
-            suggesstion = CourseSuggession.objects.filter(
-                technology__category_name__icontains=category,
-                difficulty='IN')
-            suggestion_vdo = Video.objects.filter(
-                technology_v__category_name__icontains=category,
-                difficulty='IN')
-            for val in suggesstion:
-                logging.info(f'course url : {val}')
-                suggesstion_url = val
-                course_name = val.course_name
-                ratings = val.ratings
-                instructor = val.course_instructor
-                duration = val.course_duration
-                difficulty = val.difficulty
-                logging.info(f'Suggested udemy course: {course_name}')
-                break
-            for v_id in suggestion_vdo:
-                YouTube_id = v_id.video_id
-                Title = v_id.title
-                logging.info(f'Suggested youtube course: {Title}')
-                logging.info(f'Youtube ID: {YouTube_id}')
-                break
-
-        elif score > 70 <= 100:
-            logging.info('Based on employee score we'
-                         ' are suggesting Advanced course')
-            suggesstion = CourseSuggession.objects.filter(
-                technology__category_name__icontains=category,
-                difficulty='AD')
-            suggesst_vdo = Video.objects.filter(
-                technology_v__category_name__icontains=category,
-                difficulty='AD')
-            for val in suggesstion:
-                logging.info(f'course url : {val}')
-                suggesstion_url = val
-                course_name = val.course_name
-                ratings = val.ratings
-                instructor = val.course_instructor
-                duration = val.course_duration
-                difficulty = val.difficulty
-                logging.info(f'Suggested udemy course: {course_name}')
-                break
-            for v_id in suggesst_vdo:
-                YouTube_id = v_id.video_id
-                Title = v_id.title
-                logging.info(f'Suggested youtube course: {Title}')
-                logging.info(f'Youtube ID: {YouTube_id}')
-                break
-
-        return suggesstion_url, course_name, ratings, \
-            instructor, duration, difficulty, YouTube_id, Title
-    except Exception as e:
-        logging.error(f"{e}")
-
-
-# Create your views here.
-
-
-def generate_otp():
-    try:
-        '''
-        It is will generate an 6 digit random number
-        '''
-        OTP = ''
-        digits = "0123456789"
-        for i in range(4):
-            OTP += digits[math.floor(random.random() * 10)]
-        logging.info(f'OTP is generated {OTP}')
-        print('OTP is: ', OTP)
-        return OTP
-    except Exception as e:
-        logging.error(f"{e}")
-
-
-
-count = 0
-def send_otp_mail(request):
-    try:
-        Employee_Mail = request.session.get('mail')
-        # username = request.session.get('username')
-        username = Employee_Mail.split('@')[0]
-        print('resend_otp', username)
-        print('mail', Employee_Mail)
-        # user_otp = User.objects.get(username=username)
-        user_otp = User.objects.get(email=Employee_Mail)
-        otp = generate_otp()
-        database = Otp()
-        update_count = count + 1
-        database.mail = Employee_Mail
-        database.otp = otp
-        database.user = user_otp
-        database.count = update_count
-
-        check = Otp.objects.filter(mail=database.mail)
-        if check.count() > 0:
-            cc_count = Otp.objects.filter(mail=database.mail). \
-                values_list('count', flat=True)
-            new_count = list(cc_count)
-            new_count1 = new_count[0]
-            new_count2 = new_count1 + 1
-
-            Otp.objects.filter(mail=database.mail).update(
-                otp=database.otp, user=database.user, count=new_count2)
-            send_mail(subject="OTP", message=f"Your otp {otp}",
-                      from_email="switchingtechsystem@gmail.com",
-                      recipient_list=[Employee_Mail],
-                      fail_silently=False)
-            logging.info(f'Otp sent to registered employee'
-                         f' mail-id: {Employee_Mail} Otp: {otp}')
-        else:
-            send_mail(subject="OTP", message=f"Your otp {otp}",
-                      from_email="switchingtechsystem@gmail.com",
-                      recipient_list=[Employee_Mail],
-                      fail_silently=False)
-            database.save()
-            logging.info(f'Otp sent to new register employee'
-                         f' mail-id: {Employee_Mail} Otp: {otp}')
-    except Exception as e:
-        logging.error(f"{e}")
+from django.views.decorators.csrf import csrf_exempt
+from .employee import employee_progress, url, send_otp_mail
+from django.urls import reverse
+from django.http import HttpResponse
 
 
 def loginPage(request):
@@ -191,8 +31,7 @@ def loginPage(request):
     try:
         logging.basicConfig(filename='logs.log',
                             level=logging.INFO,
-                            format='%(filename)s:%(lineno)d - %(asctime)s -'
-                                   ' %(levelname)s - %(message)s')
+                            format='%(module)s.%(funcName)s:%(lineno)d - %(asctime)s - %(levelname)s - %(message)s')
         remember_me = request.session.get('remember_me', False)
         logging.info(f'remember_me is: {remember_me}')
         if remember_me:
@@ -200,53 +39,14 @@ def loginPage(request):
                          ' redirecting to the Dashboard page')
             mail = request.session.get('mail')
             user = User.objects.get(email=mail)
-            print('mail is in loginpage:', mail, user)
-            overall_progress = PlayerActivity.objects.filter(
-                user=user).order_by(
-                '-id').values_list('percentage', 'category')[:3]
-
-            if overall_progress:
-                percentages, categories = zip(*overall_progress)
-                list_overall_progress = list(percentages)
-                list_overall_categories = list(categories)
-                rounded_progress = [round(value, 2)
-                                    for value in list_overall_progress]
-                # print(rounded_progress)
-                sum_overall_progress = sum(rounded_progress)
-                logging.info(f'Employee'
-                             f' overall Progress: {sum_overall_progress} %')
-                context = {
-                    'categories': Category.objects.all(),
-                    'list_overall_progress': rounded_progress,
-                    'list_categories': list_overall_categories,
-                    'overall_progress': sum_overall_progress
-                }
-                logging.info('Dashboard page is accessed')
-                # print(context)
-                return render(request, 'dashboard.html', context)
-            else:
-                # Handle the case when no progress data is available
-                logging.info('No progress data found')
-                context = {
-                    'categories': Category.objects.all(),
-                    'list_overall_progress': [],
-                    'list_categories': [],
-                    'overall_progress': 0
-                }
-                return render(request, 'dashboard.html', context)
-
-        elif request.method == "POST":
-            if request.POST.get('mail'):
+            context = employee_progress(user)
+            return render(request, 'dashboard.html', context)
+        else:
+            if request.method == "POST":
                 Employee_Mail = request.POST.get('mail')
                 username = Employee_Mail.split('@')[0]
-                # username = request.POST.get('username')
-                # created username and mail session
-                # to store enter username and mail.
                 request.session['username'] = username
                 request.session['mail'] = Employee_Mail
-
-                print('mail is in lpost method:', Employee_Mail, username)
-
                 latest_user = User.objects.latest('date_joined')
                 last_user_id = int(latest_user.id) if latest_user else 1
                 try:
@@ -254,11 +54,10 @@ def loginPage(request):
                          Q(email__exact=Employee_Mail))
                     if user.email != Employee_Mail:
                         error_message = 'Invalid username or email.'
+                        messages.error(request, error_message)
                         logging.info('Employee entered'
                                      ' invalid username or email')
-                        return render(
-                            request, 'login.html',
-                            {'error_message': error_message})
+                        return redirect(reverse('dashboard:login'))
                 except User.DoesNotExist:
                     logging.info('New employee details are entered'
                                  ' and saving into database')
@@ -267,19 +66,15 @@ def loginPage(request):
                                                email=Employee_Mail)
                     user.save()
 
-                send_otp_mail(request)
+                send_otp_mail(Employee_Mail, username)
                 logging.info('Employee details are saved into database')
                 logging.info('Employee is redirected to otp validation page!')
-                return redirect('dashboard:validate')
-        else:
+                return redirect(reverse('dashboard:validate'))
+
             return render(request, 'login.html')
     except Exception as e:
         logging.error(f"{e}")
-
-
-global mail
-
-
+        
 def validate(request):
     '''
     This method will validate the employee entered otp with their email.
@@ -312,8 +107,8 @@ def validate(request):
             else:
                 logging.info('Otp is invalid and redirect to login page')
                 error_message = 'Invalid OTP. Please try again.'
-                return render(request, 'validate.html',
-                              {'error_message': error_message})
+                messages.error(request, error_message)
+                return redirect(reverse('dashboard:validate'))
         else:
             # This handles the GET request,
             # where you might want to display a form for OTP validation
@@ -329,7 +124,9 @@ def resend_otp(request):
     '''
 
     try:
-        send_otp_mail(request)
+        username = request.session.get('username')
+        Employee_Mail = request.session.get('mail')
+        send_otp_mail(Employee_Mail, username)
         logging.info('OTP resened to mail')
         return JsonResponse({'message': 'OTP Re-sent successfully!'})
     except Exception as e:
@@ -345,39 +142,9 @@ def dashboard(request):
     try:
         logging.info('Dashboard page is accessed!')
         mail = request.session.get('mail')
-        print('mail in dashboard is:', mail)
         user = User.objects.get(email=mail)
-        overall_progress = PlayerActivity.objects.filter(user=user).order_by(
-            '-id').values_list('percentage', 'category')[:3]
-
-        if overall_progress:
-            percentages, categories = zip(*overall_progress)
-            list_overall_progress = list(percentages)
-            list_overall_categories = list(categories)
-            rounded_progress = [
-                round(value, 2) for value in list_overall_progress]
-            sum_overall_progress = sum(rounded_progress)
-            logging.info(f'Employee overall Progress:'
-                         f' {sum_overall_progress} %')
-            context = {
-                'categories': Category.objects.all(),
-                'list_overall_progress': rounded_progress,
-                'list_categories': list_overall_categories,
-                'overall_progress': sum_overall_progress
-            }
-            logging.info('Dashboard page is accessed')
-            # print(context)
-            return render(request, 'dashboard.html', context)
-        else:
-            # Handle the case when no progress data is available
-            logging.info('No progress data found')
-            context = {
-                'categories': Category.objects.all(),
-                'list_overall_progress': [],
-                'list_categories': [],
-                'overall_progress': 0
-            }
-            return render(request, 'dashboard.html', context)
+        context = employee_progress(user)
+        return render(request, 'dashboard.html', context)
     except Exception as e:
         logging.error(f"{e}")
 
@@ -389,26 +156,22 @@ def history(request):
     This method will display the employee previous quiz attempt history
     '''
     try:
-
         logging.info('History page is accessed!')
         mail = request.session.get('mail')
         user = User.objects.get(email=mail)
         score_details = QuizUserScore.objects.filter(
             user=user).order_by('-created_at').values_list(
-            'score', 'created_at', 'quiz_domain')[:3]
+            'score', 'created_at', 'quiz_domain', 'is_attempted')[:3]
         user_history = list(score_details)
+
         if user_history:
             logging.info('Employee previous quiz history present')
             attempts_data = []
 
-            for score, user_time, user_domain in user_history:
-                logging.info(f'Employee previous quiz score: {score}')
+            for score, user_time, user_domain, is_attempted in user_history:
                 user_time = timezone.localtime(
                     user_time, timezone=pytz.timezone('Asia/Kolkata'))
-                logging.info(f'Employee previous quiz attempt date:'
-                             f' {user_time}')
-                logging.info(f'Employee previous attempted'
-                             f'quiz domain: {user_domain}')
+                attempt = is_attempted
 
                 suggesstion_url, course_name, ratings, \
                     instructor, duration, difficulty, \
@@ -424,10 +187,12 @@ def history(request):
                     'instructor': instructor,
                     'duration': duration,
                     'difficulty': difficulty,
-                    'title': Title
+                    'title': Title,
+                    'attempt':attempt
                 }
-                attempts_data.append(attempt_data)
 
+                attempts_data.append(attempt_data)
+                
             return render(request, 'history.html',
                           context={'attempts_data': attempts_data})
         else:
@@ -438,7 +203,7 @@ def history(request):
             return render(request, 'history.html', context=data)
     except Exception as e:
         logging.error(f"{e}")
-
+        return HttpResponse("An error occurred while processing the request.")
 
 
 def my_learning(request):
@@ -446,20 +211,30 @@ def my_learning(request):
     This method redirects to my learning page,
     here we can see employee suggested courses.
     '''
+
     try:
+        #==========reassesment refresh=======
+        if 'selected_question_ids' in request.session:
+            del request.session['selected_question_ids']
+    #========================================
+
         logging.info('My Learning page accessed!')
         mail = request.session.get('mail')
         user = User.objects.get(email=mail)
         retrieve_time = PlayerActivity.objects.filter(
             user=user).order_by('-id').values_list(
-            'current_time', 'youtube_id')[0:3]
+            'current_time', 'youtube_id','category', 'is_completed')[0:3]
+        # 'current_time', 'youtube_id','category','is_completed')[0:3]
+        
         resume = list(retrieve_time)
         if resume:
             logging.info('Learning modules are present')
             data = {
                 'videos': [{'youtube_id': item[1],
-                            'resume_time': item[0]} for item in resume]
+                            'resume_time': item[0],'category':item[2], 'status':item[3]} for item in resume]
+                            # 'resume_time': item[0],'category':item[2], 'status':item[3]} for item in resume]
             }
+            
 
             return render(request, 'mylearning.html', context=data)
         else:
@@ -468,15 +243,19 @@ def my_learning(request):
                 'no_data': True  # Add a flag to indicate no data
             }
             return render(request, 'mylearning.html', context=data)
+
     except Exception as e:
         logging.error(f"{e}")
 
 
 def resendfeedback(request):
+    try:
         mail = request.session.get('mail')
         user = User.objects.get(email=mail)
         data= Feedback.objects.filter(user=user)
         return render(request, 'feedback.html')
+    except Exception as e:
+        logging.error(f"{e}")
 
 def feedback(request):
     try:
@@ -492,8 +271,7 @@ def feedback(request):
             return render(request, 'feedback.html',{'data_count':data_count})
     except Exception as e:
         logging.error(f"{e}")
-        print('count is count', data_count)
-        return render(request, 'feedback.html',{'data_count':data_count})
+        # return render(request, 'feedback.html',{'data_count':data_count})
 
 
 
@@ -553,13 +331,35 @@ def submit_feedback(request):
 
 def user_logout(request):
     '''
-    In this method user will be logout and clear all employee sessions
+    In this method user will be logout and clear the particular application sessions
     '''
     try:
+        # Clear specific session variables for your application
+        if 'mail' in request.session:
+            del request.session['mail']
+        if 'username' in request.session:
+            del request.session['username']
         logout(request)
         logging.info('Employee is logged-out successfully!')
-        request.session.flush()
         return redirect('/')
     except Exception as e:
         logging.error(f"{e}")
+
+@csrf_exempt  # Disable CSRF protection for demonstration purposes; use appropriate protection in production
+def update_completion_status(request):
+    if request.method == 'POST':
+        video_id = request.POST.get('video_id')
+        mail = request.session.get('mail')
+        user = User.objects.get(email=mail)
+
+        
+        try:
+            activity = PlayerActivity.objects.get(user=user,youtube_id=video_id)
+            activity.is_completed = True
+            activity.save()
+            return JsonResponse({'message': 'Completion status updated successfully'})
+        except PlayerActivity.DoesNotExist:
+            return JsonResponse({'message': 'Video not found'}, status=404)
+    return JsonResponse({'message': 'Invalid request'}, status=400)
+
 
