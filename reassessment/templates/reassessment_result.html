@@ -60,26 +60,21 @@
   background-color: #777;
 }
 </style>
+
 </head>
 <body>
   <div class="container">
     <h1>Test Results</h1>
-    {% if score >= 60 %}
-
-
+    {% if score >= 10 %}
     <div class="result">{{ text1 }}</div>
     <p><strong>Test Name:</strong>{{ user_name }}</p>
     <p><strong>Date:</strong> {{ time }} </p>
-    <!-- <p><strong>Duration:</strong> 00:15:23</p> -->
     <p><strong>Score:</strong> {{ score }} </p>
-    <!-- <a href="javascript:void(0);" onclick="redirect_quiz()">Take the Quiz Again</a> -->
-
     {% else %}
     <div class="details">
       <div class="result">{{ text2 }}</div>
       <p><strong>Test Name:</strong>{{ user_name }}</p>
       <p><strong>Date:</strong> {{ time }} </p>
-      <!-- <p><strong>Duration:</strong> 00:15:23</p> -->
       <p><strong>Score:</strong> {{ score }} </p>
       <a href="javascript:void(0);" onclick="redirect_quiz()">Take the Quiz Again</a>
     </div>

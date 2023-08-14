@@ -9,7 +9,5 @@ urlpatterns = [
     path('reassessmentquiz/', views.reassessmentquiz, name='reassessmentquiz'),
     path('reassessment_result/', views.reassessmentquiz, name='reassessmentquiz'),
 
-    
-
 ]
 
