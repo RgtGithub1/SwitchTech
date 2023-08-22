@@ -8,6 +8,16 @@
     <link href="{% static 'css/skipquiz.css' %}" rel="stylesheet">
    
     <style>
+        
+        .footer {
+        background-color: #343a40; 
+        color: white; 
+        padding: 10px 0;
+        text-align: center;
+        width: 100%;
+        height: 49px;
+        z-index: 1000;
+    }
         .youtube-videos {
             display: flex;
             flex-wrap: wrap;
@@ -334,7 +344,22 @@
             return cookieValue;
         }
 
+        history.scrollRestoration = "manual";
+
+$(window).on('beforeunload', function(){
+      $(window).scrollTop(0);
+});
+
     </script>
-    
+     <script type="text/javascript">
+        function preback() {
+          window.history.forward();
+        }
+        setTimeout("preback()", 0);
+        window.onunload=function() {null};
+    </script>
+    <div class="footer">
+        &copy; 2023 SwitchTech. All rights reserved.
+    </div>
 </body>
 </html>

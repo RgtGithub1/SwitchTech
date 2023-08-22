@@ -11,6 +11,7 @@ class AnswerAdmin(admin.StackedInline):
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerAdmin]
+    list_filter=['category']
 
 
 admin.site.register(Question, QuestionAdmin)

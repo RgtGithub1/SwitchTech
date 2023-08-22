@@ -16,18 +16,8 @@
     .logo_title {
         margin-left: 10px; /* Adjust the value to control the spacing */
     }
-    .footer {
-        background-color: #343a40; /* Desired background color for the footer */
-        color: white; /* Text color for the message */
-        padding: 10px 0;
-        text-align: center;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 49px;
-        position: fixed;
-        z-index: 1000;
-    }
+   
+  
   </style>
 
   <script>
@@ -47,16 +37,15 @@
 <body style="background-color: #fff; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-touch-callout: none;">
     <div class="header_block"style="position: fixed; width: 100%; top: 0; z-index: 1000;">
       <nav class="navbar navbar-expand-md bg_white navbar-dark">
-        <a class="navbar-brand" href="#">
-          <img class="header_logo"  style="margin-left: 69px;" src="{% static 'images\ratnaglobal_logo.png' %}" alt="">
-  
-          <span class="logo_title" style="margin-left: 5px;">SWITCHTECH <span class="blue" style=" color: blue; ">SYSTEM</span></span>
-  
+        <div class="navbar-brand" >
+          <a class="navbar-brand" href="#">
+            <img class="header_logo" style="margin-left: 69px; cursor: pointer;" src="{% static 'images\ratnaglobal_logo.png' %}" alt="">
         </a>
+  
+          <span class="logo_title" style="margin-left: 5px;"> SWITCHTECH <span class="blue" style=" color: blue; ">SYSTEM</span></span>
+  
+        </div>
       </nav>
     </div>
-    <div class="footer">
-      &copy; 2023 SwitchTech. All rights reserved.
-  </div>
 </body>
 </html>

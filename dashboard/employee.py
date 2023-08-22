@@ -8,7 +8,8 @@ from django.core.mail import send_mail
 def employee_progress(user):
     overall_progress = PlayerActivity.objects.filter(user=user, is_completed=False).order_by(
             '-id').values_list('percentage', 'category')[:3]
-    
+    user_attempts = list(QuizUserScore.objects.filter(user=user).values_list('quiz_domain', flat=True))
+
     if overall_progress:
                 percentages, categories = zip(*overall_progress)
                 list_overall_progress = list(percentages)
@@ -17,7 +18,6 @@ def employee_progress(user):
                                     for value in list_overall_progress]
                 # print(rounded_progress)
                 sum_overall_progress = sum(rounded_progress)
-                user_attempts = list(QuizUserScore.objects.filter(user=user).values_list('quiz_domain', flat=True))
                 logging.info('Employee already attempted these quizzes: %s, this categories are disabled', user_attempts)
                 logging.info(f'Employee'
                              f' overall Progress: {sum_overall_progress} %')
@@ -46,11 +46,10 @@ def employee_progress(user):
                     'list_overall_progress': [],
                     'list_categories': [],
                     'overall_progress': 0,
-                    'user_attempts':[]
+                    'user_attempts': user_attempts
                     # 'user_quiz_attempt_count': []
                 }
     return context
-
 def generate_otp():
     try:
         '''

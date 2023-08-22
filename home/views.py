@@ -66,6 +66,8 @@ def quiz(request):
             new_timer = 300
         context = {'category': request.GET.get('category'),
                    'new_timer': new_timer}
+
+        
         logging.info('Employee agreed to terms and conditions with selected'
                      ' domain {}, redirecting to quiz page'.
                      format(request.GET.get('category')))
@@ -80,14 +82,19 @@ def get_quiz(request):
     Based on selected category it will generate
     ten random questions along with options
     '''
+    # print('get quiz based on category:', request.GET.get('category'))
     try:
         logging.info('Quiz question loaded successfully')
         questions_objs = Question.objects.all()
         if request.GET.get('category'):
+            # print('enter into category domain')
             request.session['category'] = request.GET.get('category')
+            # print('storing in session category:', request.GET.get('category'), type(request.GET.get('category')))
             questions_objs = questions_objs.filter(
                 category__category_name__icontains=request.GET.get('category'))
+            # print('filtered questions', questions_objs)
         questions_objs = list(questions_objs)
+        # print('list of questions:', questions_objs)
         data = []
         random.shuffle(questions_objs)
         counter = int()
@@ -102,7 +109,9 @@ def get_quiz(request):
                     "time": request.POST.get('timer'),
                     "answers": question_obj.get_answers()
                 })
+    
         return JsonResponse({'data': data, 'status': True})
+    
     except Exception as e:
         logging.error(e)
     return HttpResponse("Something went worng")

@@ -32,7 +32,7 @@ def quiz_page(request):
         print('selected_question_ids:', selected_question_ids)
 
         if selected_question_ids is None:
-            num_questions_to_display = 2
+            num_questions_to_display = 5
             questions = list(QuizQuestion.objects.filter(Technology__category_name=category, difficulty=difficulty_level_data))
             selected_question_ids = [question.id for question in random.sample(questions, num_questions_to_display)]
             request.session['selected_question_ids'] = selected_question_ids
@@ -100,7 +100,7 @@ def reassessmentquiz(request):
             logging.info('Result submitted successfully!')
             messages.success(request, 'Result submitted successfully!')
 
-            if total_user_quiz_score >= 10:
+            if total_user_quiz_score >= 20:
 
                 context = {'user_name': user, 'time': current_time, 'score': total_user_quiz_score,
                            'text1':'Congratulations! You have successfully passed the quiz.'}

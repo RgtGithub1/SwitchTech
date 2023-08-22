@@ -1,118 +1,234 @@
 <!DOCTYPE html>
-{% include  'base_temp_quiz.html' %}
+{% include 'base_temp_quiz.html' %}
 {% load static%}
 <html lang="en">
 
 <head>
- 
+  <style>
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+      width: 100%;
+      height: 49px;
+      z-index: 1000;
+      margin-top: 79px;
+    }
+  </style>
 </head>
 
 <body>
 
   <div class="container" style="margin-top: 120px;">
-    
+
     <div class="row pt-3">
-      <div class="col-md-6">
-        <h4 class=" mt-4 align" style="padding-left: 83px;">QUIZ</h4>
+      <div class="col-md-5" style="margin-left: 84px;">
+        <h4 class=" mt-4 ">QUIZ</h4>
       </div>
 
       <div class="col-md-6 ">
         <div class="timer" style="float: right;
         margin-right: 97px;" id="timer">
+        </div>
+        
+
       </div>
-
-    </div>
-    <div class="email_form">
-            <form id="quiz-form" onsubmit="disableLeaveSiteMessage()" method="POST">
-                {% csrf_token %}
-                <div id="app">
-                    <div class=" mt-4">
-                        <div class="container-fluid mt-5 bg-light" class="rounded p-3 mt-3" style="width: 87%; height: 310px;">
-                          <div class="row">
-                            <div class="col-md-8">
-                              <div v-if="currentQuestion === index" v-for="(question, index) in questions"
-                                  class=" mb-3">
-                                  <div class="card-body">
-                                      <h5 class="card-title">Question [[index + 1]]</h5>
-                                      <p class="card-text">[[question.question]]</p>
-                                      <div class="form-check" v-for="(answer, answerIndex) in question.answers">
-                                          <input type="radio"
-                                              @change="checkAnswer($event, question.uid, answer.is_correct)"
-                                              :value="answer.answer" :name="'question-' + question.uid"
-                                              class="form-check-input" required
-                                              :id="'option-' + question.uid + '-' + answerIndex"
-                                              :checked="selectedOptions[question.uid] === answer.answer">
-                                          <label class="form-check-label"
-                                              @click="selectOption(question.uid, answer.answer)">
-                                              [[answer.answer]]
-                                          </label>
-                                      </div>
-                                  </div>
-                              </div>
-                              <center>
-                                <button v-if="currentQuestion > 0" type="button" class="btn btn-secondary custom-btn" @click="previousQuestion">Previous</button>
-                                <button v-if="currentQuestion < questions.length - 1" type="button" class="btn btn-primary custom-btn" @click="nextQuestion">Next</button>
-                                <button v-if="currentQuestion === questions.length - 1" type="button" class="btn btn-danger custom-btn" id="submit-btn" @click="submitQuiz($event)">Submit</button>
-                                <!-- <button type="button" class="btn btn-warning" @click="skipQuestion">Skip</button> -->
-                              </center>
-                    
-                            </div>
-                            <div class="col-md-4">
-                              <img width="100%" class="logo1" src="{% static 'images\Quiz.png' %}" />
-                            </div>
-                          </div>
+      <div class="email_form">
+        <form id="quiz-form" onsubmit="disableLeaveSiteMessage()" method="POST">
+          {% csrf_token %}
+          <div id="app">
+            <div class=" mt-4">
+              <div class="container-fluid mt-5 bg-light" class="rounded p-3 mt-3" style="width: 87%; height: 310px;">
+                <div class="row">
+                  <div class="col-md-8">
+                    <div v-if="currentQuestion === index" v-for="(question, index) in questions" class=" mb-3">
+                      <div class="card-body">
+                        <h5 class="card-title">Question [[index + 1]]</h5>
+                        <p class="card-text">[[question.question]]</p>
+                        <div class="form-check" v-for="(answer, answerIndex) in question.answers">
+                          <input type="radio" @change="checkAnswer($event, question.uid, answer.is_correct)"
+                            :value="answer.answer" :name="'question-' + question.uid" class="form-check-input" required
+                            :id="'option-' + question.uid + '-' + answerIndex"
+                            :checked="selectedOptions[question.uid] === answer.answer">
+                          <label class="form-check-label" @click="selectOption(question.uid, answer.answer)">
+                            [[answer.answer]]
+                          </label>
                         </div>
+                      </div>
                     </div>
+                    <center>
+                      <button v-if="currentQuestion > 0" type="button" class="btn btn-secondary custom-btn"
+                        @click="previousQuestion">Previous</button>
+                      <button v-if="currentQuestion < questions.length - 1" type="button"
+                        class="btn btn-primary custom-btn" @click="nextQuestion">Next</button>
+                      <button v-if="currentQuestion === questions.length - 1" type="button"
+                        class="btn btn-danger custom-btn" id="submit-btn" @click="submitQuiz($event)">Submit</button>
+                      <!-- <button type="button" class="btn btn-warning" @click="skipQuestion">Skip</button> -->
+                    </center>
+
+                  </div>
+                  <div class="col-md-4">
+                    <img width="100%" class="logo1" src="{% static 'images\Quiz.png' %}" />
+                  </div>
                 </div>
-            </form>
-            
-            <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
-            <script>
+              </div>
+            </div>
+          </div>
+        </form>
 
-              window.addEventListener("beforeunload", function(event) {
-                  // Submit the quiz when the user is leaving the page
-                  submitQuiz1(event, false);
-              })
-              
-              var countdown = localStorage.getItem('countdown') || {{ new_timer }}; // Retrieve countdown value from localStorage or set to default
-              var timerDisplay = document.getElementById('timer');
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+        <script>
 
-              function updateTimer() {
-                var minutes = Math.floor(countdown / 60);
-                var seconds = countdown % 60;
+          window.addEventListener("beforeunload", function (event) {
+            // Submit the quiz when the user is leaving the page
+            submitQuiz1(event, false);
+          })
 
-                // Format the time with leading zeros
-                var formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+          var countdown = localStorage.getItem('countdown') || {{ new_timer }}; // Retrieve countdown value from localStorage or set to default
+          var timerDisplay = document.getElementById('timer');
 
-                timerDisplay.textContent = "Time Remaining: " + formattedTime; // Update the text content of the timer display element
-                
-                // Store the current countdown value in localStorage
-                localStorage.setItem('countdown', countdown);
+          function startTimer() {
+  var initialCountdown = 300; // Set the initial countdown value (in seconds)
+  var storedCountdown = localStorage.getItem('countdown');
+  
+  if (storedCountdown !== null) {
+    initialCountdown = parseInt(storedCountdown, 10);
+  } else {
+    localStorage.setItem('countdown', initialCountdown);
+  }
+  
+  function updateTimer() {
+    var minutes = Math.floor(initialCountdown / 60);
+    var seconds = initialCountdown % 60;
 
-                if (countdown === 0) {
-                  submitQuiz1(null, false);
-                } else {
-                  countdown--;
-                  setTimeout(updateTimer, 1000);
-                }
+    // Format the time with leading zeros
+    var formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+
+    timerDisplay.textContent = "Time Remaining: " + formattedTime; // Update the text content of the timer display element
+
+    if (initialCountdown === 0) {
+      submitQuiz1(null, false);
+    } else {
+      initialCountdown--;
+      localStorage.setItem('countdown', initialCountdown);
+      setTimeout(updateTimer, 1000);
+    }
+  }
+
+  console.log('updateTimer() called');
+  updateTimer();
+}
+
+startTimer();
+
+
+          function submitQuiz1(event, showErrorModal = true) {
+            if (event) {
+              event.preventDefault(); // Prevent the browser's default behavior
+            }
+
+            event && event.preventDefault();
+            const currentQuestionUid = app.questions[app.currentQuestion].uid;
+
+            const scoreData = { score: app.score, category: app.category };
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // get the CSRF token from the page
+
+            const formData = new FormData();
+            formData.append('score', app.score);
+
+            fetch(`/home/api/result/`, {
+              method: 'POST',
+              body: JSON.stringify(scoreData),
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken, // include the CSRF token in the request headers
               }
+            }).then(response => {
+              console.log('Score submitted successfully');
+              window.location.href = "/home/final/";
+            }).catch(error => {
+              console.error('Error submitting score:', error);
+            });
 
-              console.log('updateTimer() called');
-              updateTimer();
+            // Set the flag indicating that the quiz has been submitted
+            sessionStorage.setItem('quizSubmitted', 'true');
 
-              function submitQuiz1(event, showErrorModal = true) {
-                if (event) {
-                    event.preventDefault(); // Prevent the browser's default behavior
+            localStorage.removeItem('countdown');
+            localStorage.removeItem('currentQuestion');
+            localStorage.removeItem('selectedOptions');
+
+          }
+
+
+          console.log('Vue.js code loaded');
+          console.log('Category:', '{{ category }}');
+          var app = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data() {
+              return {
+                category: '{{ category }}',
+                questions: [],
+                score: 0,
+                currentQuestion: 0,
+                selectedOptions: {} // object to store selected options for each question
+              };
+            },
+
+            methods: {
+              getQuestions() {
+                var _this = this;
+                fetch(`/home/api/get-quiz/?category=${_this.category}`)
+                  .then(response => response.json())
+                  .then(result => {
+                    console.log(result);
+                    _this.questions = result.data;
+                  });
+              },
+
+              checkAnswer(event, uid, isCorrect) {
+                if (isCorrect) {
+                  this.score++;
                 }
+                this.selectedOptions[uid] = event.target.value; // Store the selected option for the current question
+              },
 
+              selectOption(questionUid, answer) {
+                this.selectedOptions[questionUid] = answer;
+                const radioId = 'option-' + questionUid + '-' + this.questions[this.currentQuestion].answers.findIndex(ans => ans.answer === answer);
+                document.getElementById(radioId).click();
+              },
+
+              nextQuestion() {
+                const currentQuestionUid = this.questions[this.currentQuestion].uid;
+                this.currentQuestion++;
+              },
+
+              previousQuestion() {
+                this.currentQuestion--;
+              },
+
+              skipQuestion() {
+                if (this.currentQuestion === this.questions.length - 1) {
+                  this.submitQuiz(null, false); // If it's the last question, call the submitQuiz method without showing the error modal
+                } else {
+                  const currentQuestionUid = this.questions[this.currentQuestion].uid;
+                  this.selectedOptions[currentQuestionUid] = null; // Set the selected option for the current question to null
+                  this.currentQuestion++; // Move to the next question
+                }
+              },
+
+              submitQuiz(event, showErrorModal = true) {
                 event && event.preventDefault();
-                const currentQuestionUid = app.questions[app.currentQuestion].uid;
+                const currentQuestionUid = this.questions[this.currentQuestion].uid;
 
-                const scoreData = { score: app.score, category: app.category };
+                const scoreData = { score: this.score, category: this.category };
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // get the CSRF token from the page
+                console.log(JSON.stringify(scoreData));
 
                 const formData = new FormData();
-                formData.append('score', app.score);
+                formData.append('score', this.score);
 
                 fetch(`/home/api/result/`, {
                   method: 'POST',
@@ -128,155 +244,70 @@
                   console.error('Error submitting score:', error);
                 });
 
-                // Set the flag indicating that the quiz has been submitted
-                sessionStorage.setItem('quizSubmitted', 'true');
-                
                 localStorage.removeItem('countdown');
                 localStorage.removeItem('currentQuestion');
                 localStorage.removeItem('selectedOptions');
-                
+
+              },
+            },
+
+            created() {
+              this.getQuestions();
+              console.log('Loaded');
+
+              // Retrieve quiz progress from localStorage and update the currentQuestion and selectedOptions
+              const savedCurrentQuestion = localStorage.getItem('currentQuestion');
+              const savedSelectedOptions = JSON.parse(localStorage.getItem('selectedOptions'));
+              if (savedCurrentQuestion !== null && savedSelectedOptions !== null) {
+                this.currentQuestion = parseInt(savedCurrentQuestion);
+                this.selectedOptions = savedSelectedOptions;
               }
+            },
+          });
 
+          // Disable the back button completely
+          function preventBack() {
+            window.history.pushState(null, null, window.location.href);
+            window.addEventListener('popstate', function (event) {
+              window.history.pushState(null, null, window.location.href);
+            });
+          }
+          preventBack();
+        </script>
 
-              console.log('Vue.js code loaded');
-              console.log('Category:', '{{ category }}');
-              var app = new Vue({
-                el: '#app',
-                delimiters: ['[[', ']]'],
-                data() {
-                  return {
-                    category: '{{ category }}',
-                    questions: [],
-                    score: 0,
-                    currentQuestion: 0,
-                    selectedOptions: {} // object to store selected options for each question
-                  };
-                },
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+          function disableF5(e) {
+            if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82)
+              e.preventDefault();
+          };
 
-                methods: {
-                  getQuestions() {
-                    var _this = this;
-                    fetch(`/home/api/get-quiz/?category=${_this.category}`)
-                      .then(response => response.json())
-                      .then(result => {
-                        console.log(result);
-                        _this.questions = result.data;
-                      });
-                  },
+          $(document).ready(function () {
+            // Attach the event listener to the document for the "keydown" event
+            $(document).on("keydown", disableF5);
 
-                  checkAnswer(event, uid, isCorrect) {
-                    if (isCorrect) {
-                      this.score++;
-                    }
-                    this.selectedOptions[uid] = event.target.value; // Store the selected option for the current question
-                  },
+            // Your other scripts and code can go here if needed.
+            // ...
+          });
+          
+          
 
-                  selectOption(questionUid, answer) {
-                    this.selectedOptions[questionUid] = answer;
-                    const radioId = 'option-' + questionUid + '-' + this.questions[this.currentQuestion].answers.findIndex(ans => ans.answer === answer);
-                    document.getElementById(radioId).click();
-                  },
+        </script>
+       <script type="text/javascript">
+        window.history.forward();
+        function noBack() {
+            window.history.forward();
+        }
+    </script>
+      </div>
+    </div>
+  </div>
 
-                  nextQuestion() {
-                    const currentQuestionUid = this.questions[this.currentQuestion].uid;
-                    this.currentQuestion++;
-                  },
-
-                  previousQuestion() {
-                    this.currentQuestion--;
-                  },
-
-                  skipQuestion() {
-                    if (this.currentQuestion === this.questions.length - 1) {
-                      this.submitQuiz(null, false); // If it's the last question, call the submitQuiz method without showing the error modal
-                    } else {
-                      const currentQuestionUid = this.questions[this.currentQuestion].uid;
-                      this.selectedOptions[currentQuestionUid] = null; // Set the selected option for the current question to null
-                      this.currentQuestion++; // Move to the next question
-                    }
-                  },
-
-                  submitQuiz(event, showErrorModal = true) {
-                    event && event.preventDefault();
-                    const currentQuestionUid = this.questions[this.currentQuestion].uid;
-
-                    const scoreData = { score: this.score, category: this.category };
-                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // get the CSRF token from the page
-                    console.log(JSON.stringify(scoreData));
-
-                    const formData = new FormData();
-                    formData.append('score', this.score);
-
-                    fetch(`/home/api/result/`, {
-                      method: 'POST',
-                      body: JSON.stringify(scoreData),
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken, // include the CSRF token in the request headers
-                      }
-                    }).then(response => {
-                      console.log('Score submitted successfully');
-                      window.location.href = "/home/final/";
-                    }).catch(error => {
-                      console.error('Error submitting score:', error);
-                    });
-
-                    localStorage.removeItem('countdown');
-                    localStorage.removeItem('currentQuestion');
-                    localStorage.removeItem('selectedOptions');
-
-                  },
-                },
-
-                created() {
-                    this.getQuestions();
-                    console.log('Loaded');
-
-                    // Retrieve quiz progress from localStorage and update the currentQuestion and selectedOptions
-                    const savedCurrentQuestion = localStorage.getItem('currentQuestion');
-                    const savedSelectedOptions = JSON.parse(localStorage.getItem('selectedOptions'));
-                    if (savedCurrentQuestion !== null && savedSelectedOptions !== null) {
-                        this.currentQuestion = parseInt(savedCurrentQuestion);
-                        this.selectedOptions = savedSelectedOptions;
-                    }
-                },
-              });
-
-              // Disable the back button completely
-              function preventBack() {
-                  window.history.pushState(null, null, window.location.href);
-                  window.addEventListener('popstate', function (event) {
-                      window.history.pushState(null, null, window.location.href);
-                  });
-              }
-              preventBack();
-            </script>
-
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-            <script type="text/javascript">
-              function disableF5(e) {
-                if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82)
-                  e.preventDefault();
-              };
-
-              $(document).ready(function(){
-                // Attach the event listener to the document for the "keydown" event
-                $(document).on("keydown", disableF5);
-
-                // Your other scripts and code can go here if needed.
-                // ...
-              });
-
-            </script>
-             <script type="text/javascript">
-              function preventBack() { window.history.forward(); }
-              setTimeout("preventBack()", 0);
-              window.onunload = function () { null };
-          </script>
-        </div>
-</div>
+  <div class="footer">
+    &copy; 2023 SwitchTech. All rights reserved.
+  </div>
 </body>
 
 </html>

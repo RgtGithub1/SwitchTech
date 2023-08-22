@@ -10,7 +10,7 @@
   <link href="{% static 'css/login.css' %}" rel="stylesheet">
   <style>
     .home-button {
-      margin-top: 21px;
+      margin-top: -8px;
       background-color: #000000;
       color: #ffffff;
       padding: 10px 20px;
@@ -30,37 +30,109 @@
     .home-button:active {
         background-color: #777;
     }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Styles for the modal content */
+    .modal-content {
+      background-color: #fefefe;
+      margin: 20% auto;
+      padding: 10px;
+      border: 1px solid #888;
+      width: 40%;
+      text-align: center;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    
+    .close:hover {
+      color: black;
+    }
+    
+    
+    .modal-button {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .footer {
+        background-color: #343a40; 
+        color: white; 
+        padding: 10px 0;
+        text-align: center;
+        width: 100%;
+        height: 49px;
+        z-index: 1000;
+        margin-top: -40px;
+    }
+    ol {
+  border: 1px solid black;
+}
+   .img-thumbnail {
+margin-top: -33PX;
+   }
   </style>
- <!DOCTYPE html>
- {% load static%}
- <html lang="en">
- 
+  <script type="text/javascript">
+    function preback() {
+      window.history.forward();
+    }
+    setTimeout("preback()", 0);
+    window.onunload=function() {null};
+  </script>
+
  <head>
-   <title>SwitchTech-Dashboard</title>
- 
-   
-   
+   <title>SwitchTech-Dashboard</title>  
  
  </head>
  <body style="background-color: #fff; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-touch-callout: none;">
     <div class="container" style="margin-top: 97px;">
     <div class="row">
     </div>
+    <div class="row">
+      <div class="col-md-2">
+        <button class="home-button" onclick="redirectToHome()">Home</button>
+      </div>
+    </div>
     <div class="row mt-1 mb-1">
-      <div class="col-md-6">
-        <form action="" onsubmit="startQuiz(); return false;">
+      <div class="col-md-7">
+        {% comment %} <form action="" onsubmit="startQuiz(); return false;"> {% endcomment %}
+        <form id="quizForm" action="" onsubmit="checkAgreementAndSubmit(); return false;">
           <div>
             <div class="form-group">
               <!-- //here select a domain -->
               <p><h5>Selected Domain</h5></p>
-              <input type="text" class="form-control" id="selectedCategory" onchange="enableButtons()" readonly>
+              <input type="text" class="form-control" id="selectedCategory" readonly>
             </div>
             <!-- //These are the user Instructions -->
             <h1>Instructions</h1>
             <p>Welcome to the quiz! Before we get started, please read and agree to the following terms and
               conditions:
             </p>
-            <ol>
+            <ol style="    height: 150px;
+                overflow-y: scroll;">
               <li>The quiz contains 10 questions, Each question is worth 10 marks.</li>
               <li>Each question will have a single correct answer.</li>
               <li>Timer will be running in the background for 5 minutes, if you not submit the quiz before the timer it will auto submits the quiz</li>
@@ -69,46 +141,40 @@
               <li>Your final score will be displayed at the end of the quiz.</li>
             </ol>
             <div>
-              <input type="checkbox" id="agreeCheckbox" onchange="enableButtons()">
+              <input type="checkbox" id="agreeCheckbox">
               <label for="agreeCheckbox">I agree to the terms and conditions</label>
             </div>
             <!-- //This button is used to redirect the page to quiz page. -->
-            <div class="d-flex ">
+            <div class="d-flex " style="margin-top: -7px;">
               <div class="button-container">
-                <button id="continueButton" class="btn btn-success mt-3 mx-3" style="background-color: green;"
-                  disabled>Submit</button>
+                <button id="continueButton" class="btn btn-success mt-3 mx-3" onclick="checkAgreementAndSubmit()">Submit</button>
               </div>
             </div>
           </div>
         </form>
         <!-- //This function is used to skip the quiz by the user.  -->
         <div class="button-container skip_button">
-          <button id="skipButton" class="btn btn-danger mt-3 me-2" onclick="skipQuiz()" style="background-color:red;"
-            disabled>Skip Quiz</button>
+          <button id="skipButton" class="btn btn-danger mt-3 me-2" onclick="checkAgreementAndSkip()" >Skip Quiz</button>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-5">
         <img class="img-thumbnail rounded logo" src="{% static 'images/Instruction.png' %}" width="85%" />
       </div>
     </div>
   </div>
+  <div id="customModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <p>You need to agree to the terms and conditions.</p>
+      <button class="modal-button" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2023 SwitchTech. All rights reserved.
+</div>
+  
     <script>
-      //This function is used to enable the buttons.
-
-      function enableButtons() {
-        const dropdown = document.getElementById("selectedCategory");
-        const agreeCheckbox = document.getElementById("agreeCheckbox");
-        const continueButton = document.getElementById("continueButton");
-        const skipButton = document.getElementById("skipButton");
-
-        if (dropdown.value && agreeCheckbox.checked) {
-          continueButton.disabled = false;
-          skipButton.disabled = false;
-        } else {
-          continueButton.disabled = true;
-          skipButton.disabled = true;
-        }
-      }
 
       //This function is used to skip the quiz by the user.
       function skipQuiz() {
@@ -126,6 +192,7 @@
 
       //This function is used to start the quiz.
       function startQuiz() {
+        
         var quizCount = {{ user_quiz_attempt_count }};
         if (quizCount >= 3) {
           // Redirect to the page for raising a ticket
@@ -154,55 +221,61 @@
       });
 
       
-        function redirectToHome() {
-          const currentHost = window.location.host;
-          const url = `http://${currentHost}/validate/dashboard`;
-          window.location.replace(url);
-        }
+      function redirectToHome() {
+        const currentHost = window.location.host;
+        const url = `http://${currentHost}/validate/dashboard`;
+        window.location.replace(url);
+      }
       
+      function checkAgreementAndSubmit() {
+        const agreeCheckbox = document.getElementById("agreeCheckbox");
+        if (!agreeCheckbox.checked) {
+          //alert("You need to agree to the terms and conditions.");
+          openModal();
+          //event.preventDefault();
+        } else {
+          const quizForm = document.getElementById("quizForm");
+          startQuiz() // Submit the form
+        }
+      }
+    
+      function checkAgreementAndSkip() {
+        const agreeCheckbox = document.getElementById("agreeCheckbox");
+        if (!agreeCheckbox.checked) {
+          //alert("You need to agree to the terms and conditions.");
+          openModal();
+        } else {
+          skipQuiz();
+        }
+      }
 
+
+      // Open the custom modal
+      function openModal() {
+        const modal = document.getElementById("customModal");
+        modal.style.display = "block";
+      }
+
+      // Close the custom modal
+      function closeModal() {
+        const modal = document.getElementById("customModal");
+        modal.style.display = "none";
+      }
+
+
+      //document.getElementById("continueButton").addEventListener("click", checkAgreement);
+      //document.getElementById("skipButton").addEventListener("click", checkAgreementAndSkip);
+
+      history.scrollRestoration = "manual";
+
+$(window).on('beforeunload', function(){
+      $(window).scrollTop(0);
+});
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-pzjwLpsohi4ryZ9eBDSO+dqHi2mhYwlMj7klWJigFRDI4biL6NW3QLaW00Wsd4e7"
       crossorigin="anonymous"></script>
-      <script>
-        //this function use the dropdown of domain
-        function enableButtons() {
-          const dropdown = document.getElementById("selectedCategory");
-          const agreeCheckbox = document.getElementById("agreeCheckbox");
-          const continueButton = document.getElementById("continueButton");
-          const skipButton = document.getElementById("skipButton");
-    
-          if (dropdown.value && agreeCheckbox.checked) {
-            continueButton.disabled = false;
-            skipButton.disabled = false;
-          } else {
-            continueButton.disabled = true;
-            skipButton.disabled = true;
-          }
-        }
-    
-        document.addEventListener("DOMContentLoaded", function () {
-          var selectedLink = sessionStorage.getItem('selectedLink');
-          if (selectedLink) {
-            console.log('Stored Link:', selectedLink);
-    
-            // Set the stored link in the selectedCategory field
-            document.getElementById('selectedCategory').value = selectedLink;
-          }
-        });
-    
-      </script>
-      <script type="text/javascript">
-        function preback() {
-          window.history.forward();
-        }
-        setTimeout("preback()", 0);
-        window.onunload=function() {null};
-
-        
-      </script>
 </body>
 
 </html>
