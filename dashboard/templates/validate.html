@@ -1,4 +1,3 @@
-
 {% include  'base_login_validate.html' %}
 {% load static %}
 {% block content %}
@@ -9,7 +8,17 @@
 
 <head>
     <link href="{% static 'css/login.css' %}" rel="stylesheet">
-    
+    <style>
+        .footer {
+        background-color: #343a40; 
+        color: white; 
+        padding: 10px 0;
+        text-align: center;
+        width: 100%;
+        height: 49px;
+        z-index: 1000;
+    }
+</style>
 
 </head>
 
@@ -22,14 +31,14 @@
                     <form method="POST" action="{% url 'dashboard:validate' %}">
 
                         <p class="header_desc">
-                        <h4 >Please check your mail, you will recevie four digit OTP enter below to continue...</h4>
-                        <h4>If not received, <a href="#" id="resend-link" onclick="resendOTP()"> </a> click here to resend OTP</h4>
-                        <div id="resend-message" style="color: green;"></div>
+                            <h4 >Please check your mail, you will recevie four digit OTP enter below to continue...</h4>
+                            <h4>If not received, <a href="#" id="resend-link" onclick="resendOTP()">click here</a> to resend OTP</h4>
+                            <div id="resend-message" style="color: green;"></div>
                         </p>
 
                         {% csrf_token %}
 
-                        <div class="form-group pt-5">
+                        <div class="form-group pt-1">
 
                             <!-- //its take automatically which your mentioned in login mail -->
 
@@ -53,7 +62,7 @@
                         <!-- // it is dispaly a error message -->
 
                         {% if messages %}
-                        <ul class="messages" style="color: red; margin-top: 10px;">
+                        <ul id="error-message" class="messages" style="color: red; margin-top: 10px;">
                             {% for message in messages %}
                                 {{message}}
                             {% endfor %}
@@ -81,10 +90,14 @@
                     </form>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" style=" margin-top: 16px;">
                 <img class="img-thumbnail rounded logo" style="top: 48px;"   src="{% static 'images/loginimg.png' %}" width="100%" />
             </div>
         </div>
+    </div>
+    
+ <div class="footer">
+        &copy; 2023 SwitchTech. All rights reserved.
     </div>
 
     <script>
@@ -188,6 +201,13 @@
                 resendLinkClicked = true;
             }
     
+    </script>
+     <script type="text/javascript">
+        function preback() {
+          window.history.forward();
+        }
+        setTimeout("preback()", 0);
+        window.onunload=function() {null};
     </script>
 </body>
 </html>

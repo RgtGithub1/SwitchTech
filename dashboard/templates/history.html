@@ -31,6 +31,16 @@
        .home-button:active {
            background-color: #777;
        }
+       .footer {
+        background-color: #343a40; 
+        color: white; 
+        padding: 10px 0;
+        text-align: center;
+        width: 100%;
+        height: 49px;
+        z-index: 1000;
+        margin-top: 95px;
+    }
  </style>
 
 </head>
@@ -84,13 +94,39 @@
       {% endif %}
     </div>
   </div>
+  <div class="footer">
+    &copy; 2023 SwitchTech. All rights reserved.
+</div>
+
   <script>
     function redirectToHome() {
       const currentHost = window.location.host;
       const url = `http://${currentHost}/validate/dashboard`;
       window.location.replace(url);
     }
+
+    history.scrollRestoration = "manual";
+
+$(window).on('beforeunload', function(){
+      $(window).scrollTop(0);
+});
+
+window.addEventListener("beforeunload", function (event) {
+  // Submit the quiz when the user is leaving the page
+  submitQuiz1(event, false);
+});
+
+// ... (preventBack function)
+preventBack();
   </script>
+        <script type="text/javascript">
+          function preback() {
+            window.history.forward();
+          }
+          setTimeout("preback()", 0);
+          window.onunload=function() {null};
+   </script>
+   
 
 </body>
 
