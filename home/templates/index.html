@@ -79,15 +79,16 @@
       margin-top: 10px;
     }
     .footer {
-        background-color: #343a40; 
-        color: white; 
-        padding: 10px 0;
-        text-align: center;
-        width: 100%;
-        height: 49px;
-        z-index: 1000;
-        margin-top: -40px;
-    }
+    background-color: #343a40;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    height: 49px;
+    z-index: 1000;
+    position: fixed;
+    bottom: 0px;
+}
     ol {
   border: 1px solid black;
 }
@@ -157,7 +158,7 @@ margin-top: -33PX;
           <button id="skipButton" class="btn btn-danger mt-3 me-2" onclick="checkAgreementAndSkip()" >Skip Quiz</button>
         </div>
       </div>
-      <div class="col-md-5">
+      <div class="col-md-5" style="margin-top: -77px;">
         <img class="img-thumbnail rounded logo" src="{% static 'images/Instruction.png' %}" width="85%" />
       </div>
     </div>
