@@ -277,13 +277,8 @@
     player = new YT.Player('ytplayer', {
         videoId: youtubeId,
         playerVars: {
-
         'start': 0,
-
-        'autoplay': 1, // Set autoplay to 1 to enable autostart
-
-
-
+        'autoplay': 0, // Set autoplay to 1 to enable autostartz
     },
         events: {
             'onStateChange': onPlayerStateChange
