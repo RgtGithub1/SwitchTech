@@ -6,7 +6,6 @@
 <head> base_temp.html
   <!-- Required meta tags -->
   
-
   <link href="{% static 'css/login.css' %}" rel="stylesheet">
   <style>
     .home-button {
@@ -62,11 +61,9 @@
       cursor: pointer;
     }
     
-    
     .close:hover {
       color: black;
     }
-    
     
     .modal-button {
       background-color: #007bff;
@@ -88,13 +85,37 @@
     z-index: 1000;
     position: fixed;
     bottom: 0px;
-}
+    }
     ol {
-  border: 1px solid black;
-}
+    border: 1px solid black;
+    }
    .img-thumbnail {
-margin-top: -33PX;
-   }
+    margin-top: -33PX;
+    }
+
+   /* Popup message for reassessement */
+    .custom-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      z-index: 1000;
+    }
+    /* Popup message for reassessement */
+    .popup-button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
   </style>
   <script type="text/javascript">
     function preback() {
@@ -174,37 +195,67 @@ margin-top: -33PX;
   <div class="footer">
     &copy; 2023 SwitchTech. All rights reserved.
 </div>
+<div id="custom-popup" class="custom-popup">
+  <h5>You have already given quiz for 3 tecnologies</h5>
+  <p>To continue raise an ticket</p>
+  <button id="popup-yes" class="popup-button">Yes</button>
+  <button id="popup-no" class="popup-button">No</button>
+</div>
   
     <script>
 
-      //This function is used to skip the quiz by the user.
       function skipQuiz() {
-        var quizCount = {{ user_quiz_attempt_count }};
-        if (quizCount >= 3) {
-          // Redirect to the page for raising a ticket
-          window.open("https://letmecall.keka.com/#/me/helpdesk/mytickets");
-        } else {
-          const selectedTechnology = document.getElementById("selectedCategory").value;
-          const currentHost = window.location.host;
-          const url = `http://${currentHost}/home/skipquiz/?category=${selectedTechnology}`;
-          window.location.replace(url);
-        }
+          var quizCount = {{ user_quiz_attempt_count }};
+          
+          if (quizCount >= 3) {
+              const customPopup = document.getElementById('custom-popup');
+              const popupYesButton = document.getElementById('popup-yes');
+              const popupNoButton = document.getElementById('popup-no');
+
+              customPopup.style.display = 'block';
+              console.log("popup opened");
+
+              popupYesButton.onclick = function() {
+                  window.open("https://letmecall.keka.com/#/me/helpdesk/mytickets");
+                  customPopup.style.display = 'none';
+              };
+
+              popupNoButton.onclick = function() {
+                  customPopup.style.display = 'none';
+              };
+          } else {
+              const selectedTechnology = document.getElementById("selectedCategory").value;
+              const currentHost = window.location.host;
+              const url = `http://${currentHost}/home/skipquiz/?category=${selectedTechnology}`;
+              window.location.replace(url);
+          }
       }
 
-      //This function is used to start the quiz.
       function startQuiz() {
-        
-        var quizCount = {{ user_quiz_attempt_count }};
-        if (quizCount >= 3) {
-          // Redirect to the page for raising a ticket
-          window.open("https://letmecall.keka.com/#/me/helpdesk/mytickets");
-        } else {
-          // Otherwise, proceed to the quiz page
-          const selectedTechnology = document.getElementById("selectedCategory").value;
-          const currentHost = window.location.host;
-          const url = `http://${currentHost}/home/quiz/?category=${selectedTechnology}`;
-          window.location.replace(url);
-        }
+          var quizCount = {{ user_quiz_attempt_count }};
+
+          if (quizCount >= 3) {
+              const customPopup = document.getElementById('custom-popup');
+              const popupYesButton = document.getElementById('popup-yes');
+              const popupNoButton = document.getElementById('popup-no');
+
+              customPopup.style.display = 'block';
+
+              popupYesButton.onclick = function() {
+                  window.open("https://letmecall.keka.com/#/me/helpdesk/mytickets");
+                  customPopup.style.display = 'none';
+              };
+
+              popupNoButton.onclick = function() {
+                  customPopup.style.display = 'none';
+              };
+
+          } else {
+              const selectedTechnology = document.getElementById("selectedCategory").value;
+              const currentHost = window.location.host;
+              const url = `http://${currentHost}/home/quiz/?category=${selectedTechnology}`;
+              window.location.replace(url);
+          }
       }
 
       document.addEventListener("DOMContentLoaded", function () {

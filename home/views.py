@@ -34,8 +34,11 @@ def index(request):
         mail = request.session.get('mail')
         user = User.objects.get(email=mail)
         User_ids = user.id
+        print('User_ids:', User_ids)
         user_quiz_attempt_id = QuizUserScore.objects.filter(user_id=User_ids).values_list('user_id')
+        print('user_quiz_attempt_id:', user_quiz_attempt_id)
         user_quiz_attempt_count = len([item[0] for item in user_quiz_attempt_id])
+        print('user_quiz_attempt_count:', user_quiz_attempt_count)
         context = {'user_quiz_attempt_count': user_quiz_attempt_count}
         return render(request, 'index.html', context)
     except Exception as e:

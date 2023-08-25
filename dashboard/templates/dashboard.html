@@ -36,7 +36,7 @@
   <div class="header_block" style="position: fixed; width: 100%; top: 0; z-index: 1000;" >
     <nav class="navbar navbar-expand-md bg_white navbar-dark">
       <div class="navbar-brand" >
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="">
           <img class="header_logo" style="margin-left: 69px; cursor: pointer;" src="{% static 'images\ratnaglobal_logo.png' %}" alt="">
       </a>
 
@@ -50,7 +50,7 @@
         <ul class="navbar-nav ml-auto">
           <li class="nav-item dropdown">
             {% if user.is_authenticated %}
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
               <span class="greet">Welcome</span>
               <span class="username">{{ request.user }}</span>
