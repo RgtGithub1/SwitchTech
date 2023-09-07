@@ -1,36 +1,19 @@
 {% load static %}
+{% include 'base_temp_quiz.html' %}
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>TrainingTech-Reassessment-Quiz-Page</title>
+    <title>Quiz Page</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #f8f8f8;
-            padding: 20px;
-        }
 
         h1 {
             text-align: center;
             color: #333;
         }
-        
-        .sub {
-            border-radius: 7px;
-            height: 43px;
-            width: 82px;
-            background-color: red;
-            color: white;
-            font-size: 16px;
-            border: red;
-
-        }
 
         form {
-            background-color: #fff;
+            background-color: #818589;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -78,43 +61,98 @@
         button:last-child {
             margin-right: 0;
         }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+            height: 49px;
+            z-index: 1000;
+            position: fixed;
+            bottom: 0px;
+        }
+
+        .sub {
+            border-radius: 7px;
+            height: 43px;
+            width: 82px;
+            background-color: red;
+            color: white;
+            font-size: 16px;
+            border: red;
+
+        }
+        .Pre{
+            border-radius: 7px;
+            height: 43px;
+            width: 82px;
+            font-size: 16px;
+            padding-inline: 10px;
+        }
+        .Pre1{
+            border-radius: 7px;
+            height: 43px;
+            width: 82px;
+            font-size: 16px;
+            padding-inline: 10px;
+        }
     </style>
+    
 </head>
+
 <body>
-    
-    <div class="col-md-6 ">
-        <div id="timer" style="float: right;">Time left: 0:00</div>
+    <div class="container" style="margin-top: 120px;">
+        <div class="row pt-3" style="font-size: 22px;">
+            <div class="col-md-1" style="margin-left: 60px;">
+                <span class=" mt-4 ">Quiz</span>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6 ">
+                <div id="timer" style="float: right;">Time left: 0:00</div>
+            </div>
+        </div>
     </div>
-    
-    <h1>Quiz</h1>
-    {% if questions %}
-        <form action="{% url 'reassessment:validate_reassessment' %}" method="post" id="feedbackForm">
-            {% csrf_token %}
-            {% for question in questions %}
-            <div class="question" id="question{{ question.id }}">
-                <p><b>{{ forloop.counter }}. {{ question.question }}</b></p>
-                {% if question.code_snippet %}
-                    <pre><code class="language-{{ question.Technology }}">{{ question.code_snippet|safe }}</code></pre>
-                {% endif %}
-                <label for="q{{ question.id }}_1"><input type="radio" name="q{{ question.id }}" value="1" id="q{{ question.id }}_1"> {{ question.option_a }}</label>
-                <label for="q{{ question.id }}_2"><input type="radio" name="q{{ question.id }}" value="2" id="q{{ question.id }}_2"> {{ question.option_b }}</label>
-                <label for="q{{ question.id }}_3"><input type="radio" name="q{{ question.id }}" value="3" id="q{{ question.id }}_3"> {{ question.option_c }}</label>
-                <label for="q{{ question.id }}_4"><input type="radio" name="q{{ question.id }}" value="4" id="q{{ question.id }}_4"> {{ question.option_d }}</label>
+
+    <div class="container-fluid">
+        <div class="row pt-5">
+            <div class="col-md-1">
+
             </div>
-            {% endfor %}
-            
-            <div class="submit-button">
-                <button type="button" id="previousButton" onclick="showQuestion(-1)">Previous</button>
-                <button type="button" id="nextButton" onclick="showQuestion(1)">Next</button>
-                <!-- <input type="submit" value="Submit" onclick="validateForm(event)"> -->
-                <button type="button" id="sumbitButton" value="Submit" onclick="validateForm(event)" class="sub">Submit</button>
+            <div class="col-md-7">
+                <form action="{% url 'home:calculate_results' %}" method="post" id="feedbackForm" style="width: 810px;">
+                    {% csrf_token %}
+                    {% for question in data %}
+                    <div class="question" id="question{{ question.uid }}">
+                        <p><b>{{ forloop.counter }}. {{ question.question }}</b></p>
+                        {% if question.code_snippet %}
+                        <pre><code class="language-{{ question.Technology }}">{{ question.code_snippet|safe }}</code></pre>
+                        {% endif %}
+                        <label for="q{{ question.uid }}_1"><input type="radio" name="q{{ question.uid }}" value="{{ question.answers.0.answer }}" id="q{{ question.uid }}_1"> {{ question.answers.0.answer }}</label>
+                        <label for="q{{ question.uid }}_2"><input type="radio" name="q{{ question.uid }}" value="{{ question.answers.1.answer }}" id="q{{ question.uid }}_2"> {{ question.answers.1.answer }}</label>
+                        <label for="q{{ question.uid }}_3"><input type="radio" name="q{{ question.uid }}" value="{{ question.answers.2.answer }}" id="q{{ question.uid }}_3"> {{ question.answers.2.answer }}</label>
+                        <label for="q{{ question.uid }}_4"><input type="radio" name="q{{ question.uid }}" value="{{ question.answers.3.answer }}" id="q{{ question.uid }}_4"> {{ question.answers.3.answer }}</label>
+                    </div>
+                    {% endfor %}
+
+                    <div class="submit-button">
+                        <button type="button" id="previousButton" onclick="showQuestion(-1)" class="Pre">Previous</button>
+                        <button type="button" id="nextButton" onclick="showQuestion(1)" class="Pre1">Next</button>
+                        <input type="submit" id="sumbitButton" value="Submit" onclick="validateForm(event)" class="sub">
+                    </div>
+                </form>
             </div>
-        </form>
-    {% else %}
-        <p> There are no questions</p>
-        <a href="javascript:void(0);" onclick="redirect_quiz()">Go Back</a>
-    {% endif %}
-        
+            <div class="col-md-4">
+                <img width="75%" class="logo1" src="{% static 'images\Quiz.png' %}" />
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2023 SwitchTech. All rights reserved.
+    </div>
 
     <link href="{% static 'prism.css' %}" rel="stylesheet">
     <script src="{% static 'prism.js' %}"></script>
@@ -123,13 +161,13 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-python.min.js"></script>
     <link href="{% static 'prism.css' %}" rel="stylesheet">
     <script src="{% static 'prism.js' %}"></script>
-    
+
     <script>
         window.onbeforeunload = function () {
             return 'Are you sure you want to leave this page? Your progress may be lost.';
         };
 
-        // ===========================================
+
         let timerInterval; // To store the interval ID
         let remainingTime = 300; // 5 minutes in seconds
 
@@ -165,11 +203,6 @@
             return time < 10 ? `0${time}` : time;
         }
 
-        // ===========================================
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     showQuestion(0);
-        // });
-
         let currentQuestionIndex = 0;
         const questions = document.querySelectorAll('.question');
 
@@ -190,6 +223,7 @@
         function updateButtonVisibility() {
             document.getElementById('previousButton').style.display = currentQuestionIndex === 0 ? 'none' : 'inline-block';
             document.getElementById('nextButton').style.display = currentQuestionIndex === questions.length - 1 ? 'none' : 'inline-block';
+
             const submitButton = document.getElementById('sumbitButton');
 
             submitButton.style.display = currentQuestionIndex === questions.length - 1 ? 'inline-block' : 'none';
@@ -213,32 +247,24 @@
 
 
             document.getElementById('feedbackForm').submit();
-            alert("Result submitted successfully.");
             window.onbeforeunload = null;
             clearInterval(timerInterval);
-            // window.location.replace = "home/final";
+            window.location.replace = "home/final";
         }
-
-        // ======================
-        function redirect_quiz() {
-            const currentHost = window.location.host;
-            quizUrl = "{% url 'dashboard:mylearning' %}"
-            window.location.replace(quizUrl);
-        }
-
+        
     </script>
+
     <script type="text/javascript">
 
         function preventBack() {
-
             window.history.forward();
-
         }
-
         setTimeout("preventBack()", 0);
 
         window.onunload = function () { null };
 
     </script>
+
 </body>
+
 </html>

@@ -55,9 +55,6 @@
       <div class="col-md-5 pt-3">
         <h1 class="quiz-history-title " style="float: left; margin-left: 150px;">Quiz History</h1>
       </div>
-      <!-- <div class="col-md-5 pt-3">
-        <button onclick="goBack()" class="btn btn-primary" style="float: right; margin-right: 150px;">Go Back</button>
-      </div> -->
     </div>
   </div>
   <div class="container-fluid mt-2">
@@ -107,17 +104,13 @@
 
     history.scrollRestoration = "manual";
 
-$(window).on('beforeunload', function(){
-      $(window).scrollTop(0);
-});
+    window.addEventListener('before unload', function() {
+        window.scrollTo(0, 0);
+    });
 
-window.addEventListener("beforeunload", function (event) {
-  // Submit the quiz when the user is leaving the page
-  submitQuiz1(event, false);
-});
-
-// ... (preventBack function)
-preventBack();
+  
+    // ... (preventBack function)
+    preventBack();
   </script>
         <script type="text/javascript">
           function preback() {
@@ -127,7 +120,6 @@ preventBack();
           window.onunload=function() {null};
    </script>
    
-
 </body>
 
 </html>

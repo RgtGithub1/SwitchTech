@@ -1,5 +1,5 @@
 {% load static%}
-{% include  'base_temp.html' %}
+{% include 'base_temp.html' %}
 
 <!DOCTYPE html>
 
@@ -7,47 +7,29 @@
 
 <head>
     <link href="{% static 'css/result.css' %}" rel="stylesheet">
-    <script type="text/javascript">
-
-        history.pushState(null, document.title, location.href);
-
-       
-
-        window.addEventListener('popstate', function (event)
-
-        {
-
-          history.pushState(null, document.title, location.href);
-
-         
-
-         
-
-        });
-
+    
     </script>
 
     <style>
-     .footer {
-    background-color: #343a40;
-    color: white;
-    padding: 10px 0;
-    text-align: center;
-    width: 100%;
-    height: 49px;
-    z-index: 1000;
-    position: fixed;
-    bottom: 0px;
-}
-
-</style>
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+            height: 49px;
+            z-index: 1000;
+            position: fixed;
+            bottom: 0px;
+        }
+    </style>
 
 </head>
 
 <body>
 
-    <div class="container"style="margin-top: 120px;">
-       
+    <div class="container" style="margin-top: 120px;">
+
 
         <div class="row ">
 
@@ -56,17 +38,14 @@
             </div>
             <div class="col-md-8 ">
 
-                <div class="QuizResults">
-                    <center><h2>Quiz Results</h2></center>
+                <div class="col text-center">
+                    <h3> Quiz Results</h3>
                 </div>
             </div>
-
             <div class="col-md-3 ">
                 <div class="logout-home-container">
                     <button class="logout-button" onclick="openModal()">Logout</button>
-
                 </div>
-
                 <div id="myModal" class="modal">
                     <div class="modal-content" style="width: 366PX;">
                         <span class="modal-close" onclick="closeModal()">&times;</span>
@@ -89,16 +68,15 @@
                 <div class="recommendations">
                     <h2>Udemy Recommendations</h2>
                     <div class="course">
-                        <!-- <div class="course-type">Paid Course: <span class="colored-box">Yes</span></div> -->
                         <div class="course-level">Course level: <span class="colored-box">{% if difficulty == "BG" %}
-                            Beginner
-                            {% elif difficulty == "IN" %}
-                            Intermediate
-                            {% elif difficulty == "AD" %}
-                            Advanced
-                            {% else %}
-                            {{ difficulty }}
-                            {% endif %}</span></div>
+                                Beginner
+                                {% elif difficulty == "IN" %}
+                                Intermediate
+                                {% elif difficulty == "AD" %}
+                                Advanced
+                                {% else %}
+                                {{ difficulty }}
+                                {% endif %}</span></div>
                         <div class="course-name">Course name: <span class="colored-box">{{course_name}}</span></div>
                         <div class="course-rating">Course Ratings:<span class="colored-box"> {{ratings}}</span></div>
                         <div class="course-instructor">Course Instructor:<span class="colored-box">
@@ -133,12 +111,12 @@
                 </div>
             </div>
 
-        <div class="col-md-4 p-3 youtube" style="margin-top: -16px;">
-            <h2>YouTube Recommendations</h2>
-            <div id="ytplayer" class="rounded p-1 mt-3" style="width: 100%; height: 310px;"></div>
-        </div>
+            <div class="col-md-4 p-3 youtube" style="margin-top: -16px;">
+                <h2>YouTube Recommendations</h2>
+                <div id="ytplayer" class="rounded p-1 mt-3" style="width: 100%; height: 310px;"></div>
+            </div>
 
-    </div>
+        </div>
 
     </div>
 
@@ -228,7 +206,7 @@
             document.getElementById("popupModal").style.display = "block";
         }
 
-        function openkekapopup(){
+        function openkekapopup() {
             document.getElementById("popupModalkeka").style.display = "block";
             document.getElementById("popupModal").style.display = "none";
         }
@@ -274,66 +252,80 @@
             window.location.replace(url);
         }
         function onYouTubePlayerAPIReady() {
-    player = new YT.Player('ytplayer', {
-        videoId: youtubeId,
-        playerVars: {
-        'start': 0,
-        'autoplay': 0, // Set autoplay to 1 to enable autostartz
-    },
-        events: {
-            'onStateChange': onPlayerStateChange
+            player = new YT.Player('ytplayer', {
+                videoId: youtubeId,
+                playerVars: {
+                    'start': 0,
+                    'autoplay': 0, // Set autoplay to 1 to enable autostartz
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
         }
-    });
-}
 
-// Save the current time when the video is paused or ended
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-        savePlayerProgress(player.getCurrentTime());
-    }
-}
+        // Save the current time when the video is paused or ended
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                savePlayerProgress(player.getCurrentTime());
+            }
+        }
 
-// Save the current time to local storage and a cookie
-function savePlayerProgress(currentTime) {
-    localStorage.setItem('youtubePlayerProgress_' + youtubeId, JSON.stringify({ currentTime: currentTime }));
-    document.cookie = 'youtubePlayerProgress_' + youtubeId + '=' + currentTime;
-}
+        // Save the current time to local storage and a cookie
+        function savePlayerProgress(currentTime) {
+            localStorage.setItem('youtubePlayerProgress_' + youtubeId, JSON.stringify({ currentTime: currentTime }));
+            document.cookie = 'youtubePlayerProgress_' + youtubeId + '=' + currentTime;
+        }
 
-// Load and play the video with saved progress
-function loadVideoWithProgress() {
-    var savedProgress = JSON.parse(localStorage.getItem('youtubePlayerProgress_' + youtubeId));
-    if (savedProgress) {
-        player.seekTo(savedProgress.currentTime);
-        player.playVideo();
-    }
-}
+        // Load and play the video with saved progress
+        function loadVideoWithProgress() {
+            var savedProgress = JSON.parse(localStorage.getItem('youtubePlayerProgress_' + youtubeId));
+            if (savedProgress) {
+                player.seekTo(savedProgress.currentTime);
+                player.playVideo();
+            }
+        }
 
-// Load saved video progress when the page loads
-window.onload = function () {
-    loadVideoWithProgress();
-};
+        // Load saved video progress when the page loads
+        window.onload = function () {
+            loadVideoWithProgress();
+        };
 
-// Check if the user is new or returning
-function isNewUser() {
-    return document.cookie.indexOf('youtubePlayerProgress_' + youtubeId) === -1;
-}
+        // Check if the user is new or returning
+        function isNewUser() {
+            return document.cookie.indexOf('youtubePlayerProgress_' + youtubeId) === -1;
+        }
 
-// On window unload, save progress if it's a returning user
-window.addEventListener('beforeunload', function () {
-    if (!isNewUser()) {
-        savePlayerProgress(player.getCurrentTime());
-    }
-});
+        // On window unload, save progress if it's a returning user
+        window.addEventListener('beforeunload', function () {
+            if (!isNewUser()) {
+                savePlayerProgress(player.getCurrentTime());
+            }
+        });
 
-history.scrollRestoration = "manual";
+        history.scrollRestoration = "manual";
 
-$(window).on('beforeunload', function(){
-      $(window).scrollTop(0);
-});
-history.pushState(null, null, location.href);
-window.onpopstate = function () {
-  history.go(1);
-};
+        window.addEventListener('before unload', function () {
+            window.scrollTo(0, 0);
+        });
+
+
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+
+        
     </script>
+    
+    <script type="text/javascript">
+        function preventBack() {
+            window.history.forward();
+        }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>
+
 </body>
+
 </html>

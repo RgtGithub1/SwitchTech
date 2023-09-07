@@ -5,8 +5,8 @@ from . import views
 
 app_name = 'dashboard'
 urlpatterns = [
-    path('', views.loginPage, name='login'),
-    path('validate/', views.validate, name='validate'),
+    path('', views.loginPage, name='custom_login'),
+    path('validate/', views.validate_otp, name='validate'),
     path('resend_otp/', views.resend_otp, name='resend_otp'),
     path('validate/dashboard/', views.dashboard, name='dashboard'),
     path('history/', views.history, name='history'),

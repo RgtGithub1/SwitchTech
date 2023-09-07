@@ -22,15 +22,11 @@
 </head>
 
 <body>
-
     <div class="container " style="margin-top: 115px;">
-       
         <div class="row">
             <div class="col-md-6" style="margin-top: 80px;">
                 <div class="email_main_form">
-
                     <h4>!!! Do you want to learn new technology or do you want to switch to a new domain? </h4>
-
                     <p class="header_desc ">If your answer is yes then you are at right place
                         Are you ready to put your knowledge to the test? Sign in now and embark on a thrilling quiz
                         journey.
@@ -38,35 +34,13 @@
                         Welcome to the Quiz Page, where learning meets excitement!
                     </p>
 
-
                     <form method="POST" action="">
-
                         {% csrf_token %}
-
-                        <!-- //here enter valid user name -->
-<!-- 
                         <div class="form-group">
-
-                            <label for="username">Username:</label>
-
-                            <input type="text" name="username" id="usernameInput" placeholder="Username"
-                                onkeydown="handleEnterKey(event)" oninput="validateUsername()" required>
-
-                            <span id="usernameError" style="color: red;"></span><br>
-
-                        </div> -->
-
-                        <!-- // here enter valid mail password -->
-
-                        <div class="form-group">
-
                             <label for="mail">Email:</label>
-
                             <input type="text" name="mail" required id="mail" pattern="[a-zA-Z]+\.[a-zA-Z]+@ratnaglobaltech\.com"
                                 placeholder="Enter your RGT Email only" onkeydown="handleEnterKey(event)">
-
                         </div>
-
                         {% if messages %}
                         <ul class="messages" style="color: red; margin-top: 10px;">
                             {% for message in messages %}
@@ -80,11 +54,8 @@
                         <div class="validate_otp_button">
                             <input class="btn btn-success" style="background: green;" id="sendOTPButton" type="submit"
                                 value="Send OTP" onclick="passValues()">
-
                         </div>
-
                     </form>
-
                 </div>
             </div>
             <div class="col-md-6" style="margin-top: -82px;">
@@ -101,34 +72,9 @@
         //Its purpose is to retrieve the value of an email input field from an HTML form and store it in the browser's localStorage.
 
         function passValues() {
-
             const email = document.getElementById("mail").value; //method to retrieve the value of the input field with the id "mail".
-
             localStorage.setItem('email', email); // method to store the email value in the browser's localStorage.
-
         }
-
-//         function validateUsername() {  // Its purpose is to validate a username input field and enable or disable a
-//             var usernameInput = document.getElementById('usernameInput');
-//             var usernameError = document.getElementById('usernameError');
-//             var sendOTPButton = document.getElementById('sendOTPButton');    //based on the validity of the username
-//             var username = usernameInput.value;
-// <!--            var regex = /^[a-zA-Z0-9]+$/; // validate the format of the username input.-->
-//             var regex = /^(?:[a-zA-Z0-9]+[ !@#$%^&*()_+,.?'":;|-]*)?[a-zA-Z0-9]+[@.]?$/; //updated
-//             if (username === '') {
-//                 // Empty username
-//                 usernameError.textContent = '';
-//                 sendOTPButton.disabled = true; // Disable the button
-//             } else if (regex.test(username) && !(/^\d+$/.test(username))) {
-//                 // Valid username
-//                 usernameError.textContent = '';
-//                 sendOTPButton.disabled = false; // Enable the button
-//             } else {
-//                 // Invalid username
-//                 usernameError.textContent = 'Invalid username.';
-//                 sendOTPButton.disabled = true; // Disable the button
-//             }
-//         }
 
         function handleEnterKey(event) { //Its purpose is to handle the behavior when the Enter key is pressed on an input field within a form.
             if (event.keyCode === 13) {

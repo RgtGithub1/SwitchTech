@@ -8,7 +8,6 @@ from django.utils import timezone
 
 class QuizUserScore(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # user = models.CharField(User, max_length=50)
     quiz_domain = models.CharField(max_length=50, null=True)
     score = models.IntegerField()
     created_at = models.DateTimeField()
@@ -19,8 +18,6 @@ class QuizUserScore(models.Model):
             self.created_at = timezone.localtime(
                 timezone.now(), timezone=pytz.timezone('Asia/Kolkata'))
         super().save(*args, **kwargs)
-
-
 
 
 class BaseModel(models.Model):
@@ -82,7 +79,6 @@ class CourseSuggession(models.Model):
     technology = models.ForeignKey(
         Category, related_name='suggesstion', on_delete=models.CASCADE)
     course_url = models.URLField(max_length=1000)
-    # difficulty = models.CharField(max_length=2, choices=DIFFICULTY_LEVEL)
     difficulty = models.CharField(
         max_length=2, choices=DIFFICULTY_LEVEL, default='BG')
     course_name = models.CharField(max_length=100, default=' ')
@@ -98,20 +94,12 @@ class CourseSuggession(models.Model):
         return self.course_url
 
 
-#  testing_otp_code
 class Otp(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     mail = models.CharField(max_length=50)
     otp = models.CharField(max_length=50)
     count = models.IntegerField(default=0)
     assigned_to = models.CharField(max_length=100, default=None, null=True)
-
-
-class QuizAttempt(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # username = models.CharField(max_length=50,default='')
-    timer = models.IntegerField(default=0)
-    domain = models.CharField(max_length=50, default='')
 
 
 class Video(models.Model):
@@ -136,7 +124,7 @@ class PlayerActivity(models.Model):
     youtube_id = models.CharField(max_length=25)
     percentage = models.FloatField(default=0.0)
     category = models.CharField(max_length=50)
-    is_completed = models.BooleanField(default=False)  # New field to track completion status
+    is_completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"PlayerActivity - youtube_id: {self.youtube_id}, " \
@@ -152,9 +140,9 @@ class Feedback(models.Model):
     udm_yt_recom_helpful = models.CharField(max_length=50)
     cs_align_withur_curt_knowledge_levl = models.CharField(max_length=50)
     conveniency_accessing_recom_yt_cs = models.CharField(max_length=50)
-    valueof_progs_tracking_feature_on_dashboard = models.CharField(max_length=50)
+    valueof_progs_tracking_feature_on_dashboard = \
+        models.CharField(max_length=50)
     motivate_to_complete_course = models.CharField(max_length=50)
     specific_feature_you_feel_missing = models.CharField(max_length=1000)
     how_app_enhanced = models.CharField(max_length=1000)
     technical_prob_performance_issue = models.CharField(max_length=1000)
-  

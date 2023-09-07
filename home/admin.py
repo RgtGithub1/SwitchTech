@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, QuizAttempt, QuizUserScore, Otp, Answer
+from .models import Question, QuizUserScore, Otp, Answer
 from .models import PlayerActivity, CourseSuggession, Category, Video
 
 admin.site.register(Category)
@@ -11,7 +11,7 @@ class AnswerAdmin(admin.StackedInline):
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerAdmin]
-    list_filter=['category']
+    list_filter = ['category']
 
 
 admin.site.register(Question, QuestionAdmin)
@@ -40,8 +40,3 @@ class Video(admin.ModelAdmin):
 @admin.register(Otp)
 class Otp(admin.ModelAdmin):
     list_display = ['user', 'mail', 'otp', 'count', 'assigned_to']
-
-
-@admin.register(QuizAttempt)
-class QuizAttempt(admin.ModelAdmin):
-    list_display = ['user', 'timer', 'domain']

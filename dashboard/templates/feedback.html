@@ -4,34 +4,23 @@
 <html lang="en">
 
 <head>
-   
 
-    
     <link href="{% static 'css/result.css' %}" rel="stylesheet">
-    
-
-
-      
         <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap" rel="stylesheet">
 
     <title>Feedback Page</title>
-
     <style>
-       
-
         h1 {
             text-align: center;
             color: #333;
         }
-
      
         form {
             margin-top: 20px;
             padding: 10px;
         }
-       
 
         label {
             display: block;
@@ -152,23 +141,24 @@
            } 
 
            }
+           
 
-   .logo-main{
-    margin-top: 26px;
-    height: 75px;
-    width: 46%;
-   }
+        .logo-main{
+            margin-top: 26px;
+            height: 75px;
+            width: 46%;
+        }
 
-   .footer {
-        background-color: #343a40; 
-        color: white; 
-        padding: 10px 0;
-        text-align: center;
-        width: 100%;
-        height: 49px;
-        z-index: 1000;
-        margin-top: 15px;
-    }
+        .footer {
+            background-color: #343a40; 
+            color: white; 
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+            height: 49px;
+            z-index: 1000;
+            margin-top: 15px;
+        }
         
     </style>
 </head>
@@ -337,17 +327,15 @@
 
             // If all questions are answered, submit the form
             document.getElementById('feedbackForm').submit();
-            alert("Feedback submitted successfully.");
-
-
-            
+            alert("Feedback submitted successfully.");            
         }
 
         history.scrollRestoration = "manual";
 
-$(window).on('beforeunload', function(){
-      $(window).scrollTop(0);
-});
+        window.addEventListener('before unload', function() {
+            window.scrollTo(0, 0);
+        });
+
     </script>
 </body>
 

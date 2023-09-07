@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test Results</title>
+<title>TrainingTech-Reassessment-Result-Page</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -65,34 +65,32 @@
 <body>
   <div class="container">
     <h1>Test Results</h1>
-    {% if score > 10 %}
-    <div class="result">{{ text1 }}</div>
-    <p><strong>Test Name:</strong>{{ user_name }}</p>
-    <p><strong>Date:</strong> {{ time }} </p>
-    <p><strong>Score:</strong> {{ score }} </p>
+    {% if user_name %}
+        {% if score > 70 %}
+        <div class="result">{{ text1 }}</div>
+        <p><strong>Test Name:</strong>{{ user_name }}</p>
+        <p><strong>Date:</strong> {{ time }} </p>
+        <p><strong>Score:</strong> {{ score }} </p>
+        {% else %}
+        <div class="details">
+          <div class="result">{{ text2 }}</div>
+          <p><strong>Employee Name:</strong>{{ user_name }}</p>
+          <p><strong>Date:</strong> {{ time }} </p>
+          <p><strong>Score:</strong> {{ score }} </p>
+          <a href="javascript:void(0);" onclick="redirect_quiz()">Take the Quiz Again</a>
+        </div>
+      </div>
+      {% endif %}
     {% else %}
-    <div class="details">
-      <div class="result">{{ text2 }}</div>
-      <p><strong>Test Name:</strong>{{ user_name }}</p>
-      <p><strong>Date:</strong> {{ time }} </p>
-      <p><strong>Score:</strong> {{ score }} </p>
-      <a href="javascript:void(0);" onclick="redirect_quiz()">Take the Quiz Again</a>
-    </div>
-  </div>
-  {% endif %}
+      <p class="no-videos-message">No data stored please select any one question option</p>
+    {% endif %}
+
   <div class="row">
     <div class="col-md-1 pt-3">
         <button class="home-button" onclick="redirectToHome()" >Home</button>
     </div>
 
 </body>
-<script type="text/javascript">
-  function preback() {
-    window.history.forward();
-  }
-  setTimeout("preback()", 0);
-  window.onunload=function() {null};
-</script>
 <script>
   function redirectToHome() {
 
@@ -115,6 +113,20 @@
 
     window.location.replace(quizUrl);
   }
+
+</script>
+
+<script type="text/javascript">
+
+  function preventBack() {
+
+      window.history.forward();
+
+  }
+
+  setTimeout("preventBack()", 0);
+
+  window.onunload = function () { null };
 
 </script>
 </html>

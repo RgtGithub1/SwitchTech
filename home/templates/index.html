@@ -117,6 +117,17 @@
       border-radius: 5px;
     }
   </style>
+  <style>
+    .button-container {
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    .btn {
+      height: 40px;
+      width: 100px;
+    }
+</style>
   <script type="text/javascript">
     function preback() {
       window.history.forward();
@@ -159,7 +170,6 @@
               <li>Each question will have a single correct answer.</li>
               <li>Timer will be running in the background for 5 minutes, if you not submit the quiz before the timer it will auto submits the quiz</li>
               <li>Failure to attempt the question and clicking on the "next" button will result in zero marks being awarded for that question.</li>
-              <li>During the quiz, should not refreshing the page. If you do so, the quiz will restart from the beginning & your progress will be lost.</li>
               <li>Your final score will be displayed at the end of the quiz.</li>
             </ol>
             <div>
@@ -176,7 +186,8 @@
         </form>
         <!-- //This function is used to skip the quiz by the user.  -->
         <div class="button-container skip_button">
-          <button id="skipButton" class="btn btn-danger mt-3 me-2" onclick="checkAgreementAndSkip()" >Skip Quiz</button>
+          <button id="skipButton" class="btn btn-danger mt-3 me-2" onclick="checkAgreementAndSkip()" style="position: relative;
+          top: -55px;">Skip Quiz</button>
         </div>
       </div>
       <div class="col-md-5" style="margin-top: -77px;">
@@ -203,9 +214,10 @@
 </div>
   
     <script>
+      var quizCount = JSON.parse('{{ user_quiz_attempt_count }}');
 
       function skipQuiz() {
-          var quizCount = {{ user_quiz_attempt_count }};
+          // var quizCount = {{ user_quiz_attempt_count }};
           
           if (quizCount >= 3) {
               const customPopup = document.getElementById('custom-popup');
@@ -232,7 +244,7 @@
       }
 
       function startQuiz() {
-          var quizCount = {{ user_quiz_attempt_count }};
+          //var quizCount = {{ user_quiz_attempt_count }};
 
           if (quizCount >= 3) {
               const customPopup = document.getElementById('custom-popup');
@@ -253,7 +265,7 @@
           } else {
               const selectedTechnology = document.getElementById("selectedCategory").value;
               const currentHost = window.location.host;
-              const url = `http://${currentHost}/home/quiz/?category=${selectedTechnology}`;
+              const url = `http://${currentHost}/home/get_quiz/?category=${selectedTechnology}`;
               window.location.replace(url);
           }
       }
@@ -290,17 +302,10 @@
           startQuiz() // Submit the form
         }
       }
-    
-      function checkAgreementAndSkip() {
-        const agreeCheckbox = document.getElementById("agreeCheckbox");
-        if (!agreeCheckbox.checked) {
-          //alert("You need to agree to the terms and conditions.");
-          openModal();
-        } else {
-          skipQuiz();
-        }
-      }
 
+      function checkAgreementAndSkip() {
+        skipQuiz();
+      }
 
       // Open the custom modal
       function openModal() {
@@ -314,15 +319,12 @@
         modal.style.display = "none";
       }
 
-
-      //document.getElementById("continueButton").addEventListener("click", checkAgreement);
-      //document.getElementById("skipButton").addEventListener("click", checkAgreementAndSkip);
-
       history.scrollRestoration = "manual";
 
-$(window).on('beforeunload', function(){
-      $(window).scrollTop(0);
-});
+      window.addEventListener('before unload', function() {
+        window.scrollTo(0, 0);
+      });
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
